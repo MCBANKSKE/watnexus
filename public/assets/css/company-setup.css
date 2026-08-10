@@ -1,0 +1,177 @@
+/* ============================================================
+   Company setup page — full-width two-panel layout
+   Loaded alongside nexus.css only (NOT auth.css — see the note
+   in layouts/company-setup.blade.php on why those two collide).
+   Every color here is a var() from nexus.css, so dark/light mode
+   both work without any theme logic in this file.
+   ============================================================ */
+
+body.company-setup-page{ align-items:flex-start; }
+body.company-setup-page .page{ padding:110px 24px 60px; width:100%; }
+
+.auth-wrapper{ display:flex; justify-content:center; }
+.auth-container{
+  width:100%; max-width:1100px;
+  background:var(--surface-solid);
+  border:1px solid var(--line);
+  border-radius:24px;
+  box-shadow:0 50px 100px -40px rgba(17,63,110,0.35);
+  overflow:hidden;
+}
+.auth-grid{ display:grid; grid-template-columns:0.78fr 1.22fr; align-items:stretch; }
+
+/* ---------- left: brand panel ---------- */
+.brand-panel{
+  background:linear-gradient(150deg, var(--blue-deep), var(--blue), var(--green));
+  color:#fff; padding:48px 40px;
+  display:flex; flex-direction:column; justify-content:space-between;
+  position:relative; overflow:hidden;
+}
+.brand-panel::before{
+  content:''; position:absolute; width:280px; height:280px; border-radius:50%;
+  border:1.5px solid rgba(255,255,255,0.2); top:-100px; right:-100px; pointer-events:none;
+}
+.brand-panel::after{
+  content:''; position:absolute; width:180px; height:180px; border-radius:50%;
+  border:1.5px solid rgba(255,255,255,0.15); bottom:-60px; left:-60px; pointer-events:none;
+}
+.brand-panel .flex-1{ position:relative; z-index:1; }
+
+.brand-logo{ display:flex; align-items:center; gap:10px; margin-bottom:36px; }
+.logo-icon{
+  width:34px; height:34px; border-radius:9px; background:rgba(255,255,255,0.16);
+  display:flex; align-items:center; justify-content:center; flex-shrink:0;
+}
+.logo-icon svg{ width:18px; height:18px; fill:none; stroke:#fff; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+.logo-text{ font-family:'Fraunces', serif; font-size:17px; font-weight:600; }
+
+.brand-title{ font-family:'Fraunces', serif; font-size:28px; font-weight:600; line-height:1.15; margin-bottom:14px; }
+.brand-subtitle{ font-size:14.5px; line-height:1.6; opacity:0.9; margin-bottom:32px; max-width:340px; }
+
+.feature-list{ display:flex; flex-direction:column; gap:14px; }
+.feature-item{ display:flex; align-items:center; gap:10px; font-size:13.5px; opacity:0.95; }
+.feature-item svg{ width:18px; height:18px; flex-shrink:0; fill:none; stroke:#fff; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+
+.brand-footer{ position:relative; z-index:1; margin-top:40px; }
+.progress-indicator{ display:flex; align-items:center; gap:10px; }
+.progress-step{ display:flex; align-items:center; gap:8px; }
+.step-number{
+  width:28px; height:28px; border-radius:50%; background:rgba(255,255,255,0.16);
+  color:rgba(255,255,255,0.75); display:flex; align-items:center; justify-content:center;
+  font-family:'IBM Plex Mono', monospace; font-size:12.5px; font-weight:600; flex-shrink:0;
+}
+.progress-step.active .step-number{ background:#fff; color:var(--blue-deep); }
+.step-label{ font-size:12.5px; color:rgba(255,255,255,0.75); }
+.progress-step.active .step-label{ color:#fff; font-weight:600; }
+.progress-line{ width:32px; height:1.5px; background:rgba(255,255,255,0.3); }
+@media (max-width:900px){ .brand-panel{ padding:36px 28px; } }
+
+/* ---------- right: form card ---------- */
+.form-card{ padding:48px; max-height:88vh; overflow-y:auto; }
+.form-header{ margin-bottom:28px; }
+.form-header h2{ font-family:'Fraunces', serif; font-size:23px; color:var(--ink); margin-bottom:6px; }
+.form-header p{ font-size:14px; color:var(--ink-dim); }
+
+.status-success, .status-error{
+  display:flex; align-items:flex-start; gap:9px; border-radius:10px; padding:12px 15px;
+  font-size:13.5px; margin-bottom:22px; line-height:1.5;
+}
+.status-success{ background:var(--badge-bg); color:var(--green); border-left:3px solid var(--green); }
+.status-error{ background:rgba(226,87,76,0.12); color:#E2574C; border-left:3px solid #E2574C; }
+.status-success svg, .status-error svg{ width:18px; height:18px; flex-shrink:0; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; margin-top:1px; }
+
+.form-section{ margin-bottom:32px; padding-bottom:28px; border-bottom:1px solid var(--line); }
+.form-section:last-of-type{ border-bottom:none; margin-bottom:0; padding-bottom:0; }
+.section-title{ font-size:15px; font-weight:600; color:var(--ink); margin-bottom:16px; font-family:'Inter', sans-serif; }
+
+.form-grid{ display:grid; grid-template-columns:1fr 1fr; gap:16px 18px; }
+@media (max-width:640px){ .form-grid{ grid-template-columns:1fr; } }
+
+.form-group label{
+  display:block; font-size:12px; color:var(--ink-dim); margin-bottom:7px;
+  font-family:'IBM Plex Mono', monospace;
+}
+
+.input-wrapper{ position:relative; }
+.input-icon{
+  position:absolute; left:14px; top:50%; transform:translateY(-50%);
+  width:16px; height:16px; pointer-events:none;
+}
+.input-icon svg{ width:16px; height:16px; fill:none; stroke:var(--ink-dim); stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+
+.auth-input{
+  width:100%; background:var(--input-bg); border:1px solid var(--line); border-radius:10px;
+  padding:12px 14px 12px 40px; color:var(--ink); font-size:14px; font-family:'Inter', sans-serif;
+  outline:none; transition:border-color .2s, box-shadow .2s;
+}
+textarea.auth-input{ padding-left:40px; resize:vertical; min-height:88px; }
+select.auth-input{
+  appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23888' opacity='0.6'/%3E%3C/svg%3E");
+  background-repeat:no-repeat; background-position:right 15px center;
+}
+.auth-input::placeholder{ color:var(--ink-dim); opacity:0.55; }
+.auth-input:focus{ border-color:var(--blue); box-shadow:0 0 0 3px rgba(28,111,176,0.12); }
+.auth-input.input-invalid{ border-color:#E2574C; }
+.auth-input.input-invalid:focus{ box-shadow:0 0 0 3px rgba(226,87,76,0.14); }
+
+.auth-error{
+  display:flex; align-items:center; gap:5px; font-size:12px; color:#E2574C; margin-top:6px;
+}
+.auth-error svg{ width:13px; height:13px; flex-shrink:0; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+html.dark .auth-error, html.dark .status-error{ color:#FF8A7A; }
+
+/* ---------- radio group (business type) ---------- */
+.radio-group{ display:flex; flex-direction:column; gap:10px; margin-top:8px; }
+.radio-option{
+  display:flex; align-items:center; gap:12px; cursor:pointer;
+  padding:13px 16px; border:1px solid var(--line); border-radius:12px;
+  transition:border-color .2s, background .2s;
+}
+.radio-option:hover{ border-color:var(--blue); background:var(--surface); }
+.radio-option input[type="radio"]{ position:absolute; opacity:0; width:0; height:0; }
+
+.radio-custom{
+  width:20px; height:20px; border-radius:50%; border:2px solid var(--line);
+  position:relative; flex-shrink:0; transition:border-color .2s, background .2s;
+}
+.radio-option input[type="radio"]:checked + .radio-custom{
+  background:linear-gradient(120deg, var(--blue), var(--green)); border-color:transparent;
+}
+.radio-option input[type="radio"]:checked + .radio-custom::after{
+  content:''; position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+  width:7px; height:7px; background:#fff; border-radius:50%;
+}
+.radio-option input[type="radio"]:focus-visible + .radio-custom{
+  outline:2px solid var(--blue); outline-offset:2px;
+}
+.radio-label{ font-size:14px; color:var(--ink); }
+
+/* ---------- submit ---------- */
+.form-actions{ margin-top:32px; }
+.auth-submit{
+  width:100%; background:linear-gradient(120deg, var(--blue-deep), var(--blue), var(--green));
+  color:#fff; padding:15px 26px; border:none; border-radius:100px;
+  font-size:14.5px; font-weight:600; font-family:'Inter', sans-serif; cursor:pointer;
+  box-shadow:0 14px 30px -12px rgba(28,111,176,0.55);
+  transition:transform .25s, box-shadow .25s;
+  display:flex; align-items:center; justify-content:center;
+}
+.auth-submit:hover{ transform:translateY(-2px); box-shadow:0 18px 36px -12px rgba(60,170,80,0.55); }
+.auth-submit:disabled{ opacity:0.85; cursor:default; transform:none; }
+
+.btn-loading{ display:none; align-items:center; gap:9px; }
+.auth-submit.loading .btn-text{ display:none; }
+.auth-submit.loading .btn-loading{ display:flex; }
+
+.spinner{
+  width:15px; height:15px; border-radius:50%;
+  border:2px solid rgba(255,255,255,0.35); border-top-color:#fff;
+  animation:spin .7s linear infinite;
+}
+@keyframes spin{ to{ transform:rotate(360deg); } }
+
+@media (max-width:900px){
+  .auth-grid{ grid-template-columns:1fr; }
+  .form-card{ padding:32px 24px; max-height:none; }
+}
