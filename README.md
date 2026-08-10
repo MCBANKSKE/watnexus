@@ -678,6 +678,424 @@ php artisan tinker
 
 ---
 
+## 🎨 UI & Onboarding Implementation Plan
+
+### **Overview**
+To make WatNexus fully operational for real-world use, we need to build a user interface and implement the company onboarding flow. This will enable businesses to:
+- Self-register and create accounts
+- Connect their WhatsApp Business accounts
+- Manage their settings and view analytics
+- Start sending messages through the platform
+
+### **Phase 2A: Admin UI for Platform Management (Priority: High)**
+
+#### **1. Super Admin Dashboard**
+**Purpose**: Platform administrators manage companies, users, and system settings
+
+**Components**:
+- **Company Management**
+  - List all companies with status (active/suspended)
+  - View company details and usage statistics
+  - Suspend/activate companies
+  - View API keys and permissions
+  - Manage company subscriptions
+
+- **User Management**
+  - List all platform users
+  - Create/edit/delete users
+  - Assign roles (super_admin, admin, member)
+  - Manage user-company relationships
+
+- **System Monitoring**
+  - Real-time API usage metrics
+  - Queue worker status
+  - Failed jobs monitoring
+  - Webhook processing statistics
+  - System health indicators
+
+**Implementation**:
+- Use existing Filament SuperAdmin panel structure
+- Build resources for: Company, User, ApiKey, WhatsAppAccount
+- Add dashboard widgets for metrics
+- Estimated time: 2-3 days
+
+#### **2. Company Admin Dashboard**
+**Purpose**: Company administrators manage their WhatsApp setup and team
+
+**Components**:
+- **WhatsApp Account Management**
+  - Connect WhatsApp Business account
+  - View connected phone numbers
+  - Test connection status
+  - Manage webhooks
+
+- **Team Management**
+  - Invite team members
+  - Assign roles within company
+  - Manage API keys
+  - View activity logs
+
+- **Analytics Dashboard**
+  - Message volume statistics
+  - Delivery rates
+  - Campaign performance
+  - Usage tracking
+
+**Implementation**:
+- Create Filament Admin panel for companies
+- Build resources for: Contact, Campaign, Message, Template
+- Add custom dashboard widgets
+- Estimated time: 3-4 days
+
+---
+
+### **Phase 2B: Company Onboarding Flow (Priority: High)**
+
+#### **1. Registration Flow**
+**User Journey**: New company signs up → Account created → WhatsApp setup → Ready to use
+
+**Steps**:
+
+**Step 1: Company Registration**
+- Registration form with:
+  - Company name
+  - Contact email
+  - Phone number
+  - Country/region
+  - Industry type
+- Email verification
+- Create admin user account
+- Generate initial API key
+
+**Step 2: Company Setup Wizard**
+- Welcome screen with platform overview
+- Guide through WhatsApp connection
+- Create first contact list
+- Send test message
+- Dashboard tour
+
+**Implementation**:
+- Create registration routes and controllers
+- Build registration views (Blade + Vue/React)
+- Implement email verification
+- Create setup wizard with step-by-step flow
+- Estimated time: 2-3 days
+
+#### **2. WhatsApp Connection Wizard**
+**Purpose**: Guide companies through connecting their WhatsApp Business account
+
+**Steps**:
+
+**Step 1: Meta Developer Account Setup**
+- Check if user has Meta Developer account
+- Provide link to create account if needed
+- Instructions for creating WhatsApp Business app
+
+**Step 2: App Configuration**
+- Collect WhatsApp App ID and App Secret
+- Store encrypted credentials
+- Configure webhook URL
+- Set verify token
+
+**Step 3: Phone Number Connection**
+- Embedded signup flow (if supported)
+- Manual WABA ID and phone number entry
+- Verify phone number ownership
+- Test message send
+
+**Step 4: Webhook Verification**
+- Automated webhook setup
+- Verify Meta can reach webhook endpoint
+- Test webhook with sample event
+- Configure subscriptions (messages, message_statuses)
+
+**Implementation**:
+- Enhance existing WhatsAppAuthController
+- Create wizard views with progress indicator
+- Implement OAuth flow for Meta
+- Add webhook verification checks
+- Estimated time: 3-4 days
+
+---
+
+### **Phase 2C: Real WhatsApp API Integration (Priority: Critical)**
+
+#### **1. Meta Developer Account Setup**
+**Requirements**:
+- Meta Developer account (free)
+- WhatsApp Business App
+- Access token with required permissions
+- Webhook endpoint configuration
+
+**Setup Steps**:
+1. Go to [Meta for Developers](https://developers.facebook.com)
+2. Create new app: "Business" category
+3. Add "WhatsApp" product
+4. Configure webhook URL: `https://your-domain.com/api/v1/webhooks/whatsapp`
+5. Generate access token with permissions:
+   - `whatsapp_business_messaging`
+   - `whatsapp_business_management`
+6. Add test phone number
+
+**Environment Variables**:
+```bash
+WHATSAPP_APP_ID=your_app_id
+WHATSAPP_APP_SECRET=your_app_secret
+WHATSAPP_API_URL=https://graph.facebook.com
+WHATSAPP_GRAPH_VERSION=v23.0
+WHATSAPP_WEBHOOK_VERIFY_TOKEN=your_secure_token
+```
+
+#### **2. Template Submission to Meta**
+**Current Status**: Templates created as local drafts only
+
+**Required Implementation**:
+- Create `SubmitTemplateToMetaService`
+- Handle template submission process
+- Track submission status (pending → approved/rejected)
+- Handle rejection reasons
+- Sync approved templates from Meta
+
+**Implementation**:
+```php
+// New service: SubmitTemplateToMetaService
+class SubmitTemplateToMetaService
+{
+    public function handle(MessageTemplate $template): MessageTemplate
+    {
+        // 1. Validate template format
+        // 2. Submit to Meta API
+        // 3. Update status to pending
+        // 4. Monitor for approval/rejection
+        // 5. Return updated template
+    }
+}
+```
+
+**API Endpoint**:
+```
+POST /api/v1/templates/{template}/submit
+```
+
+**Estimated time**: 2-3 days
+
+#### **3. Real Message Sending**
+**Current Status**: Ready to send, just needs real credentials
+
+**Testing Checklist**:
+- ✅ Send text message to test number
+- ✅ Send media message (image)
+- ✅ Send template message
+- ✅ Generate and verify OTP
+- ✅ Create and send campaign
+- ✅ Receive webhook events
+- ✅ Track message status updates
+
+**Implementation Steps**:
+1. Configure production Meta credentials
+2. Test with Meta's test phone number
+3. Verify webhook delivery
+4. Test with real WhatsApp Business number
+5. Monitor message delivery rates
+6. Test error handling
+
+**Estimated time**: 1-2 days (testing and validation)
+
+---
+
+### **Phase 2D: Dashboard & Analytics (Priority: Medium)**
+
+#### **1. Company Dashboard**
+**Components**:
+- **Overview Cards**
+  - Messages sent today/week/month
+  - Delivery rate percentage
+  - Active campaigns
+  - Credit balance (if applicable)
+
+- **Charts & Graphs**
+  - Message volume over time
+  - Delivery rate trends
+  - Campaign performance
+  - Top sending numbers
+
+- **Recent Activity**
+  - Recent messages with status
+  - Recent webhook events
+  - API usage logs
+  - Failed jobs alerts
+
+**Implementation**:
+- Create dashboard resource in Filament
+- Add Chart.js or ApexCharts for visualizations
+- Real-time data refresh
+- Export functionality
+- Estimated time: 2-3 days
+
+#### **2. Message Analytics**
+**Components**:
+- **Message Statistics**
+  - Total sent/delivered/read/failed
+  - Average delivery time
+  - Cost per message (if applicable)
+  - Per-template performance
+
+- **Campaign Analytics**
+  - Campaign completion rates
+  - Recipient engagement
+  - Opt-out rates
+  - A/B testing results
+
+- **Contact Analytics**
+  - Active contacts count
+  - Growth over time
+  - Engagement metrics
+  - Segment performance
+
+**Implementation**:
+- Create analytics service
+- Build dedicated analytics views
+- Add date range filters
+- Export to CSV/PDF
+- Estimated time: 3-4 days
+
+---
+
+### **Phase 2E: User Management Interface (Priority: Medium)**
+
+#### **1. Team Management**
+**Components**:
+- **User List**
+  - All team members
+  - Roles and permissions
+  - Last activity
+  - Status (active/inactive)
+
+- **Invite User**
+  - Email invitation
+  - Role selection
+  - Company assignment
+  - Permission presets
+
+- **User Profile**
+  - Edit user details
+  - Change role
+  - Reset password
+  - View activity log
+
+**Implementation**:
+- Extend existing User model and resources
+- Create invitation system
+- Build user management views
+- Estimated time: 2-3 days
+
+#### **2. API Key Management**
+**Components**:
+- **API Key List**
+  - All keys for company
+  - Permissions
+  - Last used
+  - Expiration status
+
+- **Create API Key**
+  - Name and description
+  - Permission selection
+  - IP restrictions
+  - Expiration date
+
+- **Key Details**
+  - View permissions
+  - View usage statistics
+  - Rotate key
+  - Revoke key
+
+**Implementation**:
+- Enhance existing ApiKeyService
+- Build API key management UI
+- Add permission selector interface
+- Estimated time: 2 days
+
+---
+
+### **Implementation Timeline**
+
+| Phase | Task | Duration | Dependencies |
+|-------|------|----------|--------------|
+| **2A** | Super Admin Dashboard | 2-3 days | None |
+| **2A** | Company Admin Dashboard | 3-4 days | Super Admin Dashboard |
+| **2B** | Registration Flow | 2-3 days | None |
+| **2B** | WhatsApp Connection Wizard | 3-4 days | Registration Flow |
+| **2C** | Meta Developer Setup | 1 day | None |
+| **2C** | Template Submission | 2-3 days | None |
+| **2C** | Real API Testing | 1-2 days | Meta Setup |
+| **2D** | Company Dashboard | 2-3 days | Company Admin Dashboard |
+| **2D** | Message Analytics | 3-4 days | Company Dashboard |
+| **2E** | Team Management | 2-3 days | Company Admin Dashboard |
+| **2E** | API Key Management | 2 days | Team Management |
+
+**Total Estimated Time**: 23-33 days (3-5 weeks)
+
+---
+
+### **Immediate Next Steps (This Week)**
+
+#### **Day 1-2: Super Admin Dashboard**
+1. Set up Filament SuperAdmin panel
+2. Create Company resource with list/detail views
+3. Create User resource with role management
+4. Add basic dashboard widgets
+
+#### **Day 3-4: Company Registration**
+1. Create registration routes and controller
+2. Build registration form views
+3. Implement email verification
+4. Create welcome/setup wizard start
+
+#### **Day 5: Meta Developer Setup**
+1. Set up Meta Developer account
+2. Create WhatsApp Business app
+3. Configure webhooks
+4. Test with Meta's test number
+
+---
+
+### **Technical Requirements**
+
+#### **Frontend Stack**
+- **Filament** for admin panels (already included)
+- **Vue.js 3** or **React** for registration wizard
+- **Tailwind CSS** for styling (already included)
+- **Chart.js** or **ApexCharts** for analytics
+
+#### **Backend Enhancements**
+- **Invitation System** for team members
+- **Email Templates** for notifications
+- **Webhook Verification Service** (already exists)
+- **Template Submission Service** (needs creation)
+- **Analytics Service** (needs creation)
+
+#### **Infrastructure**
+- **Email Service** (SendGrid, Mailgun, or SES)
+- **Queue Workers** for background tasks
+- **Redis** for caching and sessions
+- **SSL Certificate** for production webhooks
+
+---
+
+### **Success Criteria**
+
+#### **Phase 2 Complete When**:
+- ✅ Companies can self-register without manual intervention
+- ✅ Companies can connect WhatsApp Business accounts via wizard
+- ✅ Real messages can be sent and received through Meta API
+- ✅ Templates can be submitted to Meta and approved
+- ✅ Admin panel allows full platform management
+- ✅ Company dashboard shows meaningful analytics
+- ✅ Team members can be invited and managed
+- ✅ API keys can be created and managed via UI
+
+---
+
 ## 📚 Additional Resources
 
 - **API Documentation**: [docs/api-documentation.md](docs/api-documentation.md)
@@ -714,17 +1132,23 @@ This project is open-sourced software licensed under the MIT license.
 - ✅ All critical tests passing (20/20)
 - ✅ Template components correctly implemented
 
-### **Phase 2: Enhanced Features**
+### **Phase 2: UI & Onboarding (Next Priority)**
+- Admin UI for platform management
+- Company onboarding flow
+- WhatsApp connection wizard
+- Dashboard and analytics
+- User management interface
+
+### **Phase 3: Enhanced Features**
 - Contact list management API
 - Template Meta submission
 - Campaign scheduling
 - Comprehensive test coverage
 - Monitoring and observability
 
-### **Phase 3: Advanced Features**
+### **Phase 4: Advanced Features**
 - Multi-language support
 - Advanced analytics dashboard
-- Admin UI (Filament)
 - Webhook retry strategies
 - Rate limiting tiers
 
