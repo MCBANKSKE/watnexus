@@ -63,6 +63,18 @@ class ApiKeyPermissionTest extends TestCase
         $response->assertStatus(404); // 404 = campaign 1 doesn't exist, permission passed
     }
 
+    public function test_campaigns_read_permission_blocks_access(): void
+    {
+        [$company, $key] = $this->actingAsCompany('messages.send');
+
+        // campaigns.read is required for GET /campaigns, but key only has messages.send
+        $response = $this->withHeader('X-API-Key', $key)
+            ->getJson('/api/v1/campaigns');
+
+        $response->assertStatus(403)
+            ->assertJson(['success' => false]);
+    }
+
     public function test_missing_campaigns_send_permission_returns_403(): void
     {
         [$company, $key] = $this->actingAsCompany('campaigns.read');
@@ -72,14 +84,29 @@ class ApiKeyPermissionTest extends TestCase
 
         // Direct test of hasPermission method
         $hasPermission = $service->hasPermission($resolved, 'campaigns.send');
-        \Log::info('hasPermission result: ' . ($hasPermission ? 'true' : 'false'));
-        \Log::info('Key permissions: ' . json_encode($resolved?->permissions));
+        $this->assertFalse($hasPermission, 'hasPermission should return false for campaigns.send');
 
+        // Create a campaign so model binding doesn't return 404
+        $template = \App\Models\MessageTemplate::create([
+            'company_id' => $company->id,
+            'name' => 'test_tpl',
+            'language' => 'en',
+            'category' => 'utility',
+            'body' => 'Test',
+            'status' => 'draft',
+        ]);
+
+        $campaign = \App\Models\Campaign::create([
+            'company_id' => $company->id,
+            'name' => 'Test Campaign',
+            'status' => 'draft',
+            'message_template_id' => $template->id,
+            'created_by' => $resolved->created_by,
+        ]);
+
+        // Now test the actual HTTP endpoint with an existing campaign
         $response = $this->withHeader('X-API-Key', $key)
-            ->postJson('/api/v1/campaigns/1/send');
-
-        \Log::info('Response status: ' . $response->getStatusCode());
-        \Log::info('Response content: ' . $response->getContent());
+            ->postJson("/api/v1/campaigns/{$campaign->id}/send");
 
         $response->assertStatus(403)
             ->assertJson(['success' => false]);

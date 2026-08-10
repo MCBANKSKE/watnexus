@@ -24,15 +24,20 @@ class WebhookSignatureTest extends TestCase
         $secret = config('services.whatsapp.app_secret');
         $sig = $signature ?? 'sha256=' . hash_hmac('sha256', $payload, $secret);
 
-        return Request::create(
-            '/api/v1/webhooks/whatsapp',
-            'POST',
-            [],
-            [],
-            [],
-            ['CONTENT_TYPE' => 'application/json'],
-            $payload
-        )->headers->set('X-Hub-Signature-256', $sig);
+        $request = new Request(
+            query: [],
+            request: [],
+            attributes: [],
+            cookies: [],
+            files: [],
+            server: [
+                'CONTENT_TYPE' => 'application/json',
+                'HTTP_X_HUB_SIGNATURE_256' => $sig,
+            ],
+            content: $payload
+        );
+
+        return $request;
     }
 
     public function test_valid_signature_passes(): void

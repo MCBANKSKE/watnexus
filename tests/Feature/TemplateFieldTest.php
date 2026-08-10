@@ -21,7 +21,12 @@ class TemplateFieldTest extends TestCase
         $user->companies()->attach($company, ['role' => 'admin', 'is_active' => true]);
 
         $service = app(ApiKeyService::class);
-        $result = $service->generate($company, $user, 'Test Key', ['templates.create']);
+        $result = $service->generate(
+            $company,
+            $user,
+            'Test Key',
+            ['templates.create', 'templates.read']
+        );
 
         return [$company, $result['plain_text_key']];
     }
