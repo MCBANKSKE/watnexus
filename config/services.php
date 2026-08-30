@@ -42,6 +42,8 @@ return [
         'app_secret' => env('WHATSAPP_APP_SECRET'),
         'webhook_verify_token' => env('WHATSAPP_WEBHOOK_VERIFY_TOKEN'),
         'oauth_config_id' => env('WHATSAPP_OAUTH_CONFIG_ID'),
+        // Where to send the user's browser after a successful OAuth callback.
+        'oauth_success_redirect' => env('WHATSAPP_OAUTH_SUCCESS_REDIRECT', '/whatsapp/accounts'),
     ],
 
     /*

@@ -3,6 +3,7 @@
 namespace App\Services\WhatsApp\Authentication;
 
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Crypt;
 
 class OAuthConnectService
 {
@@ -13,9 +14,8 @@ class OAuthConnectService
     {
         $appId = config('services.whatsapp.app_id');
         $redirectUri = route('whatsapp.oauth.callback');
-        $state = $state ?? Str::uuid()->toString();
-        
-        // Use standard OAuth flow without config_id for now
+        $state = $state ?? $this->generateState();
+
         $scopes = [
             'whatsapp_business_management',
             'whatsapp_business_messaging',
@@ -34,15 +34,51 @@ class OAuthConnectService
     }
 
     /**
-     * Generate state parameter for OAuth security.
+     * Generate an encrypted state parameter carrying the company context.
+     *
+     * The state is decrypted on callback to identify the company without
+     * relying on the web session (Meta's redirect carries no auth token).
      */
-    public function generateState(): string
+    public function generateState(int $companyId): string
     {
-        return Str::uuid()->toString();
+        $payload = [
+            'company_id' => $companyId,
+            'nonce' => Str::uuid()->toString(),
+            'expires_at' => now()->addMinutes(15)->getTimestamp(),
+        ];
+
+        return Crypt::encryptString(json_encode($payload));
     }
 
     /**
-     * Validate state parameter to prevent CSRF attacks.
+     * Decrypt and validate a state parameter from the OAuth callback.
+     *
+     * @return array{company_id: int}|null Null when the state is invalid,
+     *                                    tampered with, or expired.
+     */
+    public function resolveState(string $state): ?array
+    {
+        try {
+            $payload = json_decode(Crypt::decryptString($state), true);
+        } catch (\Throwable) {
+            return null;
+        }
+
+        if (
+            !is_array($payload)
+            || !isset($payload['company_id'], $payload['nonce'], $payload['expires_at'])
+            || !is_numeric($payload['company_id'])
+            || !is_numeric($payload['expires_at'])
+            || $payload['expires_at'] < now()->getTimestamp()
+        ) {
+            return null;
+        }
+
+        return ['company_id' => (int) $payload['company_id']];
+    }
+
+    /**
+     * Validate state parameter (legacy hash comparison, kept for compatibility).
      */
     public function validateState(string $state, string $storedState): bool
     {

@@ -12,6 +12,7 @@ use App\Http\Controllers\CompanySetupController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\WhatsAppQrCodeController;
 use App\Http\Controllers\WhatsAppOAuthController;
+use App\Http\Controllers\WhatsApp\WhatsAppAuthController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -131,7 +132,7 @@ Route::prefix('whatsapp')->group(function () {
     Route::get('/oauth/authorize', [WhatsAppOAuthController::class, 'authorize'])
         ->name('whatsapp.oauth.authorize');
     
-    Route::post('/oauth/callback', [WhatsAppOAuthController::class, 'callback'])
+    Route::get('/oauth/callback', [WhatsAppOAuthController::class, 'callback'])
         ->name('whatsapp.oauth.callback');
     
     Route::post('/oauth/refresh', [WhatsAppOAuthController::class, 'refresh'])

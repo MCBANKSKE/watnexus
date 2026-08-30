@@ -6,7 +6,7 @@ use App\Services\WhatsApp\Authentication\OAuthConnectService;
 use App\Services\WhatsApp\Authentication\OAuthCallbackService;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Cache;
+use Illuminate\Http\RedirectResponse;
 
 class WhatsAppOAuthController extends Controller
 {
@@ -21,10 +21,18 @@ class WhatsAppOAuthController extends Controller
     public function authorize(): JsonResponse
     {
         try {
-            $state = $this->oauthConnectService->generateState();
-            
-            // Store state in cache for validation
-            Cache::put('oauth_state_' . $state, true, now()->addMinutes(10));
+            $company = auth()->user()?->companies()->wherePivot('is_active', true)->first();
+
+            if (!$company) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No active company found for user.',
+                ], 400);
+            }
+
+            // Company context is sealed inside the encrypted state so the
+            // callback can resolve it without a web session.
+            $state = $this->oauthConnectService->generateState($company->id);
 
             $authorizationUrl = $this->oauthConnectService->getAuthorizationUrl($state);
 
@@ -43,51 +51,68 @@ class WhatsAppOAuthController extends Controller
 
     /**
      * Handle OAuth callback from Meta.
+     *
+     * Meta redirects the user's browser here via GET with ?code=&state=
+     * (or ?error=...&error_description=... when the user denies consent).
+     * The company context is resolved from the encrypted state, so no
+     * web session is required.
      */
-    public function callback(Request $request): JsonResponse
+    public function callback(Request $request): RedirectResponse|JsonResponse
     {
+        $wantsJson = $request->wantsJson();
+        $redirectUrl = rtrim(config('app.frontend_url', config('app.url', '/')), '/')
+            . config('services.whatsapp.oauth_success_redirect', '/whatsapp/accounts');
+
+        // User denied consent or Meta returned an error.
+        if ($request->filled('error')) {
+            $message = $request->input('error_description', 'OAuth authorization was denied.');
+
+            return $wantsJson
+                ? response()->json(['success' => false, 'message' => $message], 400)
+                : redirect()->away($redirectUrl)->with('oauth_error', $message);
+        }
+
         $request->validate([
             'code' => 'required|string',
             'state' => 'required|string',
         ]);
 
         try {
-            // Validate state to prevent CSRF
-            $cachedState = Cache::get('oauth_state_' . $request->state);
-            
-            if (!$cachedState || !$this->oauthConnectService->validateState($request->state, $request->state)) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Invalid state parameter. Possible CSRF attack.',
-                ], 400);
+            $payload = $this->oauthConnectService->resolveState($request->state);
+
+            if (!$payload) {
+                return $this->oauthFailure($wantsJson, $redirectUrl, 'Invalid or expired OAuth state. Possible CSRF attack.');
             }
 
-            // Clear state from cache
-            Cache::forget('oauth_state_' . $request->state);
+            $company = \App\Models\Company::find($payload['company_id']);
 
-            $company = auth()->user()->companies()->wherePivot('is_active', true)->first();
-            
             if (!$company) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'No active company found for user.',
-                ], 400);
+                return $this->oauthFailure($wantsJson, $redirectUrl, 'Company not found for this OAuth session.');
             }
 
             $account = $this->oauthCallbackService->handle($request->code, $company);
 
-            return response()->json([
-                'success' => true,
-                'message' => 'WhatsApp account connected successfully via OAuth!',
-                'account_id' => $account->id,
-                'account_name' => $account->name,
-            ]);
+            return $wantsJson
+                ? response()->json([
+                    'success' => true,
+                    'message' => 'WhatsApp account connected successfully via OAuth!',
+                    'account_id' => $account->id,
+                    'account_name' => $account->name,
+                ])
+                : redirect()->away($redirectUrl)->with('oauth_success', 'WhatsApp account connected successfully!');
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => $e->getMessage(),
-            ], 500);
+            return $this->oauthFailure($wantsJson, $redirectUrl, $e->getMessage());
         }
+    }
+
+    /**
+     * Uniform failure handling: JSON for API clients, redirect for browsers.
+     */
+    private function oauthFailure(bool $wantsJson, string $redirectUrl, string $message): RedirectResponse|JsonResponse
+    {
+        return $wantsJson
+            ? response()->json(['success' => false, 'message' => $message], 400)
+            : redirect()->away($redirectUrl)->with('oauth_error', $message);
     }
 
     /**
