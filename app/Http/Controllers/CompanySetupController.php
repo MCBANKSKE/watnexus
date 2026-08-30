@@ -64,8 +64,8 @@ class CompanySetupController extends Controller
                     'logo' => $logoPath,
                     'address' => $validated['address'],
                     'country_id' => $validated['country_id'],
-                    'city_id' => $validated['city_id'],
-                    'currency_id' => $validated['currency_id'],
+                    'city_id' => $validated['city_id'] ?? null,
+                    'currency_id' => $validated['currency_id'] ?? null,
                 ]);
 
                 $user->attachToCompany($company, 'admin');

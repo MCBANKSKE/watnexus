@@ -59,7 +59,7 @@
                     </div>
                 @endif
 
-                <form method="POST" action="{{ route('company.setup.store') }}">
+                <form method="POST" action="{{ route('company.setup.store') }}" enctype="multipart/form-data">
                     @csrf
 
                     <div class="form-grid">
