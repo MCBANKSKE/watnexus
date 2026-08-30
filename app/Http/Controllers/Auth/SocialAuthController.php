@@ -27,9 +27,8 @@ class SocialAuthController extends Controller
      *
      * A Google account is matched to an existing user (by `google_id` or by
      * `email`, linking the identities) or registered as a brand-new user.
-     * New users have no company yet, so — exactly like RegisterController —
-     * they are assigned the `pending_company_setup` role and routed to
-     * /company-setup to finish onboarding.
+     * New users are assigned the `admin` role with `is_superadmin = true`
+     * and routed to /company-setup to finish onboarding.
      */
     public function handleGoogleCallback(Request $request)
     {
@@ -67,10 +66,11 @@ class SocialAuthController extends Controller
                     'provider' => 'google',
                     'google_id' => $googleUser->getId(),
                     'avatar' => $googleUser->getAvatar(),
+                    'is_superadmin' => true,
                 ]);
             });
 
-            $user->assignRole('pending_company_setup');
+            $user->assignRole('admin');
 
             Auth::login($user);
 

@@ -44,11 +44,6 @@
     </div>
 
     <script src="{{ asset('assets/js/entry.js') }}" defer></script>
-    @if(Route::currentRouteName() === 'company.setup')
-        <script>
-            window.companySetupData = @json($companySetupData);
-        </script>
-    @endif
     <script src="{{ asset('assets/js/company-setup.js') }}" defer></script>
 
     @stack('scripts')

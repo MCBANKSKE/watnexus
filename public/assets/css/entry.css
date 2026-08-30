@@ -1,0 +1,171 @@
+/* ============================================================
+   Nexus Invoicing — standalone entry-page stylesheet
+   (login / register / company setup)
+
+   Self-contained: defines the theme tokens, base styles, the
+   shared header, and the background canvas for these pages so
+   they NO LONGER depend on main.css / main.js / Three.js.
+
+   The tokens deliberately mirror main.css so the pages stay
+   visually "related to the main ones" and remain dark/light
+   aware.
+   ============================================================ */
+
+/* ============ THEME TOKENS (mirror main.css) ============ */
+:root{
+  --bg: #F6F9FC;
+  --white-pure: #FFFFFF;
+  --ink: #222B33;
+  --ink-dim: rgba(34,43,51,0.62);
+  --line: rgba(24,41,58,0.10);
+  --blue: #1B6FB0;
+  --blue-deep: #113F6E;
+  --green: #3CAA50;
+  --green-light: #63C978;
+  --shadow: 0 20px 50px -20px rgba(17,63,110,0.25);
+  --glow-blue: rgba(28,111,176,0.35);
+  --glow-green: rgba(60,170,80,0.35);
+  --surface: rgba(255,255,255,0.72);
+  --surface-solid: #FFFFFF;
+  --nav-bg: rgba(246,249,252,0.72);
+  --nav-scrolled-bg: rgba(255,255,255,0.86);
+  --input-bg: #F6F9FC;
+  --badge-bg: rgba(60,170,80,0.14);
+  --badge-due-bg: rgba(28,111,176,0.12);
+}
+
+html.dark{
+  --bg: #0B0F14;
+  --white-pure: #FFFFFF;
+  --ink: #E8ECF1;
+  --ink-dim: rgba(232,236,241,0.62);
+  --line: rgba(255,255,255,0.08);
+  --blue: #3B9EFF;
+  --blue-deep: #6CB4FF;
+  --green: #5EDB7A;
+  --green-light: #8FF5A0;
+  --shadow: 0 20px 50px -20px rgba(0,0,0,0.55);
+  --glow-blue: rgba(59,158,255,0.25);
+  --glow-green: rgba(94,219,122,0.25);
+  --surface: rgba(26,31,46,0.72);
+  --surface-solid: #1A1F2E;
+  --nav-bg: rgba(11,15,20,0.72);
+  --nav-scrolled-bg: rgba(26,31,46,0.86);
+  --input-bg: #11151C;
+  --badge-bg: rgba(94,219,122,0.14);
+  --badge-due-bg: rgba(59,158,255,0.12);
+}
+
+/* ============ BASE ============ */
+html, body{ transition: background-color .35s ease, color .35s ease; }
+*{ box-sizing:border-box; margin:0; padding:0; }
+html{ scroll-behavior:smooth; }
+body{
+  background:var(--bg);
+  color:var(--ink);
+  font-family:'Inter', sans-serif;
+  overflow-x:hidden;
+  position:relative;
+  min-height:100vh;
+  transition:background-color .35s ease, color .35s ease;
+}
+::selection{ background:var(--green); color:var(--white-pure); }
+h1,h2,h3{ font-family:'Fraunces', serif; font-weight:600; letter-spacing:-0.01em; }
+a{ color:inherit; text-decoration:none; }
+
+/* ============ BACKGROUND CANVAS (driven by entry.js) ============ */
+#bg-canvas{
+  position:fixed; inset:0; width:100vw; height:100vh; z-index:0;
+  pointer-events:none;
+}
+
+/* ============ PAGE SHELL (shared) ============ */
+body .page{
+  position:relative; z-index:1;
+  width:100%; min-height:100vh;
+  display:flex;
+}
+/* main that hosts the centered entry card (used by the auth layout) */
+.entry-main{ width:100%; display:flex; justify-content:center; }
+
+/* ============ HEADER ============ */
+.entry-header{
+  position:fixed; top:0; left:0; right:0; z-index:60;
+  background:var(--nav-bg);
+  backdrop-filter:blur(14px);
+  -webkit-backdrop-filter:blur(14px);
+  border-bottom:1px solid transparent;
+  transition:border-color .3s, background .3s, box-shadow .3s;
+}
+.entry-header.scrolled{
+  border-bottom:1px solid var(--line);
+  background:var(--nav-scrolled-bg);
+  box-shadow:0 10px 30px -24px rgba(17,63,110,0.45);
+}
+.entry-header-inner{
+  max-width:1180px; margin:0 auto;
+  padding:0 32px;
+  height:68px;
+  display:flex; align-items:center; justify-content:space-between;
+}
+.entry-brand{
+  display:flex; align-items:center; gap:11px;
+  font-family:'Fraunces', serif; font-size:19px; font-weight:600;
+  letter-spacing:-0.01em; color:var(--ink);
+}
+.entry-brand-mark{
+  width:34px; height:34px; border-radius:9px; flex-shrink:0;
+  background:linear-gradient(135deg, var(--blue), var(--green));
+  display:flex; align-items:center; justify-content:center;
+  box-shadow:0 8px 18px -8px var(--glow-blue);
+  transition:transform .25s ease, box-shadow .25s ease;
+}
+.entry-brand:hover .entry-brand-mark{ transform:translateY(-1px) rotate(-3deg); box-shadow:0 10px 22px -8px var(--glow-green); }
+.entry-brand-mark svg{ width:18px; height:18px; fill:none; stroke:var(--white-pure); stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+.entry-brand-accent{ color:var(--blue); }
+
+.entry-nav{ display:flex; align-items:center; gap:8px; }
+.entry-nav-link{
+  padding:9px 16px; font-size:14px; font-weight:500; color:var(--ink-dim);
+  border:1px solid transparent; border-radius:100px;
+  transition:color .2s, background .2s, border-color .2s;
+}
+.entry-nav-link:hover{ color:var(--blue); background:var(--surface); border-color:var(--line); }
+
+.entry-theme-toggle{
+  width:40px; height:40px; border-radius:50%;
+  border:1px solid var(--line); background:var(--surface);
+  color:var(--ink); cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  transition:color .2s, border-color .2s, transform .2s, box-shadow .2s;
+}
+.entry-theme-toggle:hover{ border-color:var(--blue); color:var(--blue); transform:translateY(-1px); box-shadow:0 8px 16px -10px var(--glow-blue); }
+.entry-theme-toggle svg{ width:18px; height:18px; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+/* sun shown in light mode, moon shown in dark mode */
+html.dark .entry-theme-sun{ display:none; }
+html:not(.dark) .entry-theme-moon{ display:none; }
+
+/* ============ FOCUS ============ */
+a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible{
+  outline:2px solid var(--blue); outline-offset:3px; border-radius:6px;
+}
+
+/* ============ SCROLLBAR ============ */
+::-webkit-scrollbar{ width:10px; }
+::-webkit-scrollbar-track{ background:var(--bg); }
+::-webkit-scrollbar-thumb{ background:var(--line); border-radius:100px; }
+::-webkit-scrollbar-thumb:hover{ background:var(--ink-dim); }
+
+/* ============ RESPONSIVE HEADER ============ */
+@media (max-width:760px){
+  .entry-header-inner{ padding:0 20px; height:60px; }
+  .entry-brand{ font-size:17px; }
+  .entry-brand-mark{ width:30px; height:30px; border-radius:8px; }
+  .entry-nav-link{ padding:8px 12px; }
+  .entry-theme-toggle{ width:38px; height:38px; }
+}
+
+@media (prefers-reduced-motion: reduce){
+  html{ scroll-behavior:auto; }
+  .entry-header, .entry-brand-mark, .entry-theme-toggle{ transition:none !important; }
+}

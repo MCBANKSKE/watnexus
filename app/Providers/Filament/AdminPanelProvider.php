@@ -111,12 +111,11 @@ class AdminPanelProvider extends PanelProvider
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->pages([
                 Pages\Dashboard::class,
+                \App\Filament\Pages\Chat::class,
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
-                \App\Filament\Widgets\InvoiceStats::class,
-                \App\Filament\Widgets\PaymentStats::class,
-                \App\Filament\Widgets\ExpenseStats::class,
+               //
             ])
             ->plugins([
               //

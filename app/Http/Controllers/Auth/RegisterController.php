@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\Auth;
 
-use App\Models\User;
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -30,11 +30,10 @@ class RegisterController extends Controller
             'name' => $validated['name'],
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
-            'is_superadmin' => false,
+            'is_superadmin' => true,
         ]);
 
-        // Assign temporary role to indicate pending company setup
-        $user->syncRoles(['pending_company_setup']);
+        $user->syncRoles(['admin']);
 
         Auth::login($user);
 

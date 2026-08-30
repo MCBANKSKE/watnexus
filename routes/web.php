@@ -10,10 +10,25 @@ use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\SocialAuthController;
 use App\Http\Controllers\CompanySetupController;
 use App\Http\Controllers\SearchController;
+use App\Http\Controllers\WhatsAppQrCodeController;
+use App\Http\Controllers\WhatsAppOAuthController;
 
 Route::get('/', function () {
     return view('welcome');
 })->name('home');
+
+Route::get('/contact', function () {
+    return view('contact');
+})->name('contact');
+
+Route::get('/privacy-policy', function () {
+    return view('privacy-policy');
+})->name('privacy-policy');
+
+Route::get('/terms-of-service', function () {
+    return view('terms-of-service');
+})->name('terms-of-service');
+
 
 // Email Verification Routes
 Route::get('/email/verify', function () {
@@ -97,4 +112,24 @@ Route::prefix('whatsapp')->group(function () {
 
     Route::get('/auth/callback', [WhatsAppAuthController::class, 'callback'])
         ->name('whatsapp.auth.callback');
+
+    // QR Code Connection Routes
+    Route::get('/qr/generate', [WhatsAppQrCodeController::class, 'generate'])
+        ->name('whatsapp.qr.generate');
+    
+    Route::get('/qr/status', [WhatsAppQrCodeController::class, 'checkStatus'])
+        ->name('whatsapp.qr.status');
+    
+    Route::post('/qr/callback', [WhatsAppQrCodeController::class, 'callback'])
+        ->name('whatsapp.qr.callback');
+
+    // OAuth Connection Routes
+    Route::get('/oauth/authorize', [WhatsAppOAuthController::class, 'authorize'])
+        ->name('whatsapp.oauth.authorize');
+    
+    Route::post('/oauth/callback', [WhatsAppOAuthController::class, 'callback'])
+        ->name('whatsapp.oauth.callback');
+    
+    Route::post('/oauth/refresh', [WhatsAppOAuthController::class, 'refresh'])
+        ->name('whatsapp.oauth.refresh');
 });
