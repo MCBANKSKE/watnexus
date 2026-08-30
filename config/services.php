@@ -44,4 +44,19 @@ return [
         'oauth_config_id' => env('WHATSAPP_OAUTH_CONFIG_ID'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Google OAuth
+    |--------------------------------------------------------------------------
+    |
+    | Credentials used by Laravel Socialite for "Sign in with Google".
+    | The redirect URI maps to routes/web.php -> login.google.callback.
+    |
+    */
+    'google' => [
+        'client_id' => env('GOOGLE_CLIENT_ID'),
+        'client_secret' => env('GOOGLE_CLIENT_SECRET'),
+        'redirect' => env('GOOGLE_CLIENT_REDIRECT', '/login/google/callback'),
+    ],
+
 ];
