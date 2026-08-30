@@ -17,7 +17,7 @@
                     </div>
 
                     <h1 class="brand-title">Welcome aboard</h1>
-                    <p class="brand-subtitle">Two quick steps and you'll be quoting, invoicing and collecting M-Pesa payments.</p>
+                    <p class="brand-subtitle">Two quick steps and you'll be up and running with Watnexus.</p>
                 </div>
 
                 <div class="setup-path">
@@ -42,7 +42,7 @@
                 <div class="form-header">
                     <span class="form-step-label">Step <b>1</b> of 1</span>
                     <h2>Company Details &amp; Address</h2>
-                    <p>Tell us about your business — this appears on your quotes, invoices and receipts.</p>
+                    <p>Tell us about your business — this appears on your documents and receipts.</p>
                 </div>
 
                 @if ($errors->any())

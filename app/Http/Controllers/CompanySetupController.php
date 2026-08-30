@@ -7,6 +7,7 @@ use App\Models\Country;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class CompanySetupController extends Controller
 {
@@ -38,7 +39,7 @@ class CompanySetupController extends Controller
             'website' => ['nullable', 'url', 'max:255'],
             'registration_number' => ['nullable', 'string', 'max:255'],
             'tax_number' => ['nullable', 'string', 'max:255'],
-            'logo' => ['nullable', 'string', 'max:255'],
+            'logo_path' => ['nullable', 'image', 'max:2048'],
             'address' => ['required', 'string', 'max:500'],
             'country_id' => ['required', 'exists:countries,id'],
             'city_id' => ['nullable', 'exists:cities,id'],
@@ -46,7 +47,13 @@ class CompanySetupController extends Controller
         ]);
 
         try {
-            DB::transaction(function () use ($validated, $user) {
+            DB::transaction(function () use ($request, $validated, $user) {
+                $logoPath = null;
+
+                if ($request->hasFile('logo_path') && $request->file('logo_path')->isValid()) {
+                    $logoPath = $request->file('logo_path')->store('company-logos', 'public');
+                }
+
                 $company = Company::create([
                     'name' => $validated['name'],
                     'email' => $validated['email'],
@@ -54,7 +61,7 @@ class CompanySetupController extends Controller
                     'website' => $validated['website'],
                     'registration_number' => $validated['registration_number'],
                     'tax_number' => $validated['tax_number'],
-                    'logo' => $validated['logo'],
+                    'logo' => $logoPath,
                     'address' => $validated['address'],
                     'country_id' => $validated['country_id'],
                     'city_id' => $validated['city_id'],
