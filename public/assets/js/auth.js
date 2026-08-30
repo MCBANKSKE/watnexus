@@ -1,23 +1,24 @@
 /* ============================================================
-   Auth pages (login / register) — sign-in/sign-up panel toggle
+   Auth pages (login / register) — modern card design
    ============================================================ */
 
-function toggleAuth(target){
-  const container = document.getElementById('authContainer');
-  if(!container) return;
-  container.classList.toggle('is-signup', target === 'signup');
-
-  // Move focus into the newly-active form's first field — matters most on
-  // mobile, where the inactive panel is display:none rather than just faded.
-  const activePanel = container.querySelector(
-    target === 'signup' ? '.panel-signup' : '.panel-signin'
-  );
-  const firstField = activePanel && activePanel.querySelector('input');
-  if(firstField) firstField.focus({preventScroll:true});
-}
-
 document.addEventListener('DOMContentLoaded', function(){
-  // Loading state for whichever auth form gets submitted.
+  // Password visibility toggle
+  document.querySelectorAll('.pw-toggle').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      const group = btn.closest('.input-group');
+      const input = group && group.querySelector('input');
+      if(!input) return;
+
+      const isPassword = input.type === 'password';
+      input.type = isPassword ? 'text' : 'password';
+      group.classList.toggle('is-visible', isPassword);
+      btn.setAttribute('aria-pressed', isPassword ? 'true' : 'false');
+      btn.setAttribute('aria-label', isPassword ? 'Hide password' : 'Show password');
+    });
+  });
+
+  // Loading state for auth forms
   document.querySelectorAll('.auth-form').forEach(function(form){
     form.addEventListener('submit', function(){
       const btn = form.querySelector('button[type="submit"]');

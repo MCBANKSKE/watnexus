@@ -29,6 +29,10 @@ Route::get('/terms-of-service', function () {
     return view('terms-of-service');
 })->name('terms-of-service');
 
+Route::get('/data-deletion', function () {
+    return view('data-deletion');
+})->name('data-deletion');
+
 
 // Email Verification Routes
 Route::get('/email/verify', function () {

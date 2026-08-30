@@ -5,10 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="theme-color" content="#F6F9FC">
-    <meta name="description" content="Nexus Invoicing — Professional billing and payment collection for businesses worldwide">
+    <meta name="description" content="WatNexus — Multi-company WhatsApp Business API messaging platform for businesses worldwide">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <meta name="apple-mobile-web-app-title" content="Nexus">
+    <meta name="apple-mobile-web-app-title" content="WatNexus">
     <link rel="apple-touch-icon" href="{{ asset('assets/img/favicon.png') }}">
 
     <link rel="manifest" href="{{ asset('build/manifest.webmanifest') }}">
@@ -30,10 +30,10 @@
         })();
     </script>
 
-    <title>@yield('title', config('app.name', 'Nexus Invoicing'))</title>
-    <meta name="description" content="@yield('description', 'Nexus Invoicing — Professional billing and payment collection for businesses worldwide. Get paid faster with multiple payment methods including M-Pesa.')">
-    <meta name="keywords" content="@yield('keywords', 'Nexus Invoicing, business invoicing, payment collection, billing software, quote to cash, M-Pesa payments, multi-currency')">
-    <meta name="author" content="@yield('author', 'Nexus Invoicing')">
+    <title>@yield('title', config('app.name', 'WatNexus'))</title>
+    <meta name="description" content="@yield('description', 'WatNexus — Multi-company WhatsApp Business API platform. Send messages, OTP codes, and marketing campaigns through a unified API.')">
+    <meta name="keywords" content="@yield('keywords', 'WatNexus, WhatsApp messaging, bulk messaging, WhatsApp Business API, OTP, campaigns, multi-currency')">
+    <meta name="author" content="@yield('author', 'WatNexus')">
 
     <link href="{{ asset('assets/img/favicon.png') }}" rel="icon">
 
@@ -55,7 +55,7 @@
 
     <div class="page">
         <nav id="nav">
-            <div class="brand"><img src="{{ asset('assets/img/favicon.png') }}" alt="Nexus Invoicing" class="brand-mark">Nexus Invoicing</div>
+            <div class="brand"><img src="{{ asset('assets/img/favicon.png') }}" alt="WatNexus" class="brand-mark">WatNexus</div>
             <div class="nav-links">
                 <a href="#why-nexus">Why Nexus</a>
                 <a href="#features">Features</a>
@@ -79,8 +79,8 @@
             <div class="wrap">
                 <div class="footer-content">
                     <div class="footer-section">
-                        <div class="brand"><img src="{{ asset('assets/img/favicon.png') }}" alt="Nexus Invoicing" class="brand-mark">Nexus Invoicing</div>
-                        <p class="footer-description">Professional billing and payment collection for businesses worldwide. Streamline your invoicing workflow and get paid faster.</p>
+                        <div class="brand"><img src="{{ asset('assets/img/favicon.png') }}" alt="WatNexus" class="brand-mark">WatNexus</div>
+                        <p class="footer-description">Multi-company WhatsApp Business API platform. Send messages, OTP codes, and marketing campaigns through a unified API.</p>
                         <div class="footer-social">
                             <a href="#" aria-label="Twitter"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M23 3a10.9 10.9 0 01-3.14 1.53 4.48 4.48 0 00-7.86 3v1A10.66 10.66 0 013 4s-4 9 5 13a11.64 11.64 0 01-7 2c9 5 20 0 20-11.5a4.5 4.5 0 00-.08-.83A7.72 7.72 0 0023 3z"/></svg></a>
                             <a href="#" aria-label="LinkedIn"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z"/><circle cx="4" cy="4" r="2"/></svg></a>
@@ -121,8 +121,9 @@
                     <div class="footer-section">
                         <h4>Legal</h4>
                         <ul class="footer-links">
-                            <li><a href="#">Privacy Policy</a></li>
-                            <li><a href="#">Terms of Service</a></li>
+                            <li><a href="{{ route('privacy-policy') }}">Privacy Policy</a></li>
+                            <li><a href="{{ route('terms-of-service') }}">Terms of Service</a></li>
+                            <li><a href="{{ route('data-deletion') }}">Data Deletion</a></li>
                             <li><a href="#">Cookie Policy</a></li>
                             <li><a href="#">GDPR</a></li>
                         </ul>
@@ -131,7 +132,7 @@
                 
                 <div class="footer-bottom">
                     <div class="footer-copyright">
-                        <span>&copy; 2024 Nexus Invoicing. All rights reserved.</span>
+                        <span>&copy; 2024 WatNexus. All rights reserved.</span>
                     </div>
                     <div class="footer-built">
                         <span>Built for Global Businesses</span>
@@ -150,15 +151,15 @@
             </div>
         </footer>
 
-        <a href="#" id="scroll-top" class="scroll-top" aria-label="Back to top">↑</a>
+        <a href="#" id="scroll-top" class="scroll-top" aria-label="Back to top">â†‘</a>
     </div>
 
     <!-- PWA Install Modal -->
     <div id="pwa-modal-overlay" class="pwa-modal-overlay">
         <div class="pwa-modal">
-            <button id="pwa-modal-close" class="pwa-modal-close" aria-label="Close">×</button>
-            <img src="{{ asset('assets/img/favicon.png') }}" alt="Nexus Invoicing" class="pwa-modal-icon">
-            <h3>Install Nexus Invoicing</h3>
+            <button id="pwa-modal-close" class="pwa-modal-close" aria-label="Close">Ã—</button>
+            <img src="{{ asset('assets/img/favicon.png') }}" alt="WatNexus" class="pwa-modal-icon">
+            <h3>Install WatNexus</h3>
             <p>Install our app for quick access to your invoices, quotes, and payments. Works offline and loads instantly.</p>
             
             <div id="pwa-modal-browser-content">

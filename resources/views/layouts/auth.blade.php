@@ -15,9 +15,9 @@
         })();
     </script>
 
-    <title>@yield('title', config('app.name', 'Nexus Invoicing'))</title>
-    <meta name="description" content="Nexus Invoicing — Quote. Invoice. Get paid on M-Pesa.">
-    <meta name="author" content="Nexus Invoicing">
+    <title>@yield('title', config('app.name', 'Watnexus'))</title>
+    <meta name="description" content="Watnexus — Streamline your business operations and get paid faster.">
+    <meta name="author" content="Watnexus">
 
     <link href="{{ asset('assets/img/favicon.png') }}" rel="icon">
 

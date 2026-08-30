@@ -1,10 +1,10 @@
 <header class="entry-header" id="entryHeader">
     <div class="entry-header-inner">
-        <a class="entry-brand" href="{{ route('home') }}" aria-label="Nexus Invoicing — Home">
+        <a class="entry-brand" href="{{ route('home') }}" aria-label="Watnexus — Home">
             <span class="entry-brand-mark" aria-hidden="true">
                 <svg viewBox="0 0 24 24"><path d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
             </span>
-            <span class="entry-brand-name">Nexus <span class="entry-brand-accent">Invoicing</span></span>
+            <span class="entry-brand-name">{{ config('app.name') }}</span>
         </a>
 
         <nav class="entry-nav" aria-label="Nexus">
