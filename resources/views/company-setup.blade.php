@@ -147,19 +147,25 @@
                             </div>
                         </div>
 
-                        <div>
-                            <div class="form-group">
-                                <label for="logo">Logo URL</label>
-                                <div class="input-wrapper">
-                                    <input id="logo" name="logo" type="text" value="{{ old('logo') }}"
-                                           class="auth-input @error('logo') input-invalid @enderror"
-                                           placeholder="https://www.company.com/logo.png">
+                        <div class="col-span-2">
+                                <div class="form-group">
+                                    <label for="logo_path">Company Logo</label>
+                                    <div class="logo-dropzone @error('logo_path') input-invalid @enderror">
+                                        <div class="logo-preview">
+                                            <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="9.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+                                        </div>
+                                        <div class="logo-copy">
+                                            <div class="logo-title">Upload your logo</div>
+                                            <div class="logo-sub">Drag a file here or click to browse (PNG or JPG)</div>
+                                        </div>
+                                        <button type="button" class="logo-clear">Remove</button>
+                                        <input id="logo_path" name="logo_path" type="file" accept="image/*">
+                                    </div>
+                                    @error('logo_path')
+                                        <div class="auth-error">{{ $message }}</div>
+                                    @enderror
                                 </div>
-                                @error('logo')
-                                    <div class="auth-error">{{ $message }}</div>
-                                @enderror
                             </div>
-                        </div>
 
                         <div class="col-span-2">
                             <div class="form-group">
@@ -195,33 +201,8 @@
                             </div>
                         </div>
 
-                        <div>
-                            <div class="form-group">
-                                <label for="city">City</label>
-                                <div class="input-wrapper">
-                                    <input id="city" name="city_id" type="number" value="{{ old('city_id') }}"
-                                           class="auth-input @error('city_id') input-invalid @enderror"
-                                           placeholder="e.g. Nairobi">
-                                </div>
-                                @error('city_id')
-                                    <div class="auth-error">{{ $message }}</div>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div>
-                            <div class="form-group">
-                                <label for="currency">Currency</label>
-                                <div class="input-wrapper">
-                                    <input id="currency" name="currency_id" type="number" value="{{ old('currency_id') }}"
-                                           class="auth-input @error('currency_id') input-invalid @enderror"
-                                           placeholder="Country ID for currency">
-                                </div>
-                                @error('currency_id')
-                                    <div class="auth-error">{{ $message }}</div>
-                                @enderror
-                            </div>
-                        </div>
+                        
+                        
                     </div>
 
                     <div class="wizard-actions">
