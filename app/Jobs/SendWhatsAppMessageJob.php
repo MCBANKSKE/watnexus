@@ -35,7 +35,7 @@ class SendWhatsAppMessageJob implements ShouldQueue
     /**
      * Deliver the message via WhatsApp.
      */
-        public function handle(
+    public function handle(
         SendTextMessageService $sendText,
         SendTemplateMessageService $sendTemplate,
         SendMediaMessageService $sendMedia
@@ -81,15 +81,14 @@ class SendWhatsAppMessageJob implements ShouldQueue
      *
      * @return array<string, mixed>
      */
-        protected function deliver(
+    protected function deliver(
         SendTextMessageService $sendText,
         SendTemplateMessageService $sendTemplate,
         SendMediaMessageService $sendMedia
     ): array {
-        $to = $this->message->contact?->phone
-            ?? $this->message->whatsappPhoneNumber?->phone_number;
+        $to = $this->message->contact?->phone;
 
-        if (!$to) {
+        if (! $to) {
             throw new \RuntimeException(
                 'Cannot resolve a recipient phone number for the message.'
             );
@@ -108,7 +107,7 @@ class SendWhatsAppMessageJob implements ShouldQueue
         if (in_array($this->message->type, ['image', 'video', 'audio', 'document', 'sticker'], true)) {
             $mediaId = $this->message->metadata['media_id'] ?? null;
 
-            if (!$mediaId) {
+            if (! $mediaId) {
                 throw new \RuntimeException(
                     'Media message is missing the uploaded media ID.'
                 );

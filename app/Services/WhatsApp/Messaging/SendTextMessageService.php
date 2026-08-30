@@ -25,7 +25,7 @@ class SendTextMessageService
         $response = $this->authenticatedHttp(
             $this->accessTokenFor($phoneNumber)
         )->post(
-            $this->apiBaseUrl() . '/' . $phoneNumber->phone_number_id . '/messages',
+            $this->apiBaseUrl().'/'.$phoneNumber->phone_number_id.'/messages',
             [
                 'messaging_product' => 'whatsapp',
                 'to' => $to,
@@ -37,9 +37,9 @@ class SendTextMessageService
             ]
         );
 
-        if (!$response->successful()) {
+        if (! $response->successful()) {
             throw new RuntimeException(
-                'Failed to send WhatsApp text message: ' . $response->body()
+                'Failed to send WhatsApp text message: '.$response->body()
             );
         }
 

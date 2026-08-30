@@ -52,11 +52,11 @@ class CampaignController extends ApiController
                 'metadata' => $data['metadata'] ?? null,
             ]);
 
-            if (!empty($data['contact_ids'])) {
+            if (! empty($data['contact_ids'])) {
                 $campaign->contacts()->attach($data['contact_ids']);
             }
 
-            if (!empty($data['contact_list_ids'])) {
+            if (! empty($data['contact_list_ids'])) {
                 $campaign->contactLists()->attach($data['contact_list_ids']);
             }
 
@@ -65,7 +65,7 @@ class CampaignController extends ApiController
 
         return ApiResponse::data(
             $campaign->load(['messageTemplate', 'contacts', 'contactLists']),
-                        'Campaign created.',
+            'Campaign created.',
             201
         );
     }
@@ -116,17 +116,17 @@ class CampaignController extends ApiController
                 : $campaign->metadata,
         ]);
 
-        if (!empty($data['contact_ids'])) {
+        if (! empty($data['contact_ids'])) {
             $campaign->contacts()->syncWithoutDetaching($data['contact_ids']);
         }
 
-        if (!empty($data['contact_list_ids'])) {
+        if (! empty($data['contact_list_ids'])) {
             $campaign->contactLists()->syncWithoutDetaching($data['contact_list_ids']);
         }
 
         return ApiResponse::data(
             $campaign->fresh()->load(['messageTemplate', 'contacts', 'contactLists']),
-                        'Campaign updated.'
+            'Campaign updated.'
         );
     }
 
@@ -148,7 +148,7 @@ class CampaignController extends ApiController
 
         $campaign->delete();
 
-                return ApiResponse::message('Campaign deleted.');
+        return ApiResponse::message('Campaign deleted.');
     }
 
     /**
@@ -168,7 +168,7 @@ class CampaignController extends ApiController
 
         return ApiResponse::data(
             $campaign->fresh()->load(['messageTemplate', 'contacts', 'contactLists']),
-                        'Campaign dispatched.'
+            'Campaign dispatched.'
         );
     }
 
@@ -204,6 +204,3 @@ class CampaignController extends ApiController
         return ApiResponse::data($recipients);
     }
 }
-
-
-

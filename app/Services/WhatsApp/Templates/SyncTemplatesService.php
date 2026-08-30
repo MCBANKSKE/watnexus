@@ -57,15 +57,15 @@ class SyncTemplatesService
     {
         $response = $this->authenticatedHttp($account->access_token)
             ->get(
-                $this->apiBaseUrl() . '/' . $account->business_account_id . '/message_templates',
+                $this->apiBaseUrl().'/'.$account->business_account_id.'/message_templates',
                 [
                     'fields' => 'id,name,status,category,language,components,rejected_reason',
                 ]
             );
 
-        if (!$response->successful()) {
+        if (! $response->successful()) {
             throw new RuntimeException(
-                'Unable to retrieve WhatsApp templates: ' . $response->body()
+                'Unable to retrieve WhatsApp templates: '.$response->body()
             );
         }
 

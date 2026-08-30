@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class WhatsAppPhoneNumber extends Model
 {
-    use HasFactory;
+    use \App\Models\Concerns\BelongsToCompany, HasFactory;
 
     protected $table = 'whatsapp_phone_numbers';
 

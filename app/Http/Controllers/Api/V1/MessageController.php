@@ -29,7 +29,7 @@ class MessageController extends ApiController
             ->where('status', 'connected')
             ->first();
 
-        if (!$phoneNumber) {
+        if (! $phoneNumber) {
             return ApiResponse::error(
                 'No connected WhatsApp phone number for this company.',
                 409
@@ -67,7 +67,7 @@ class MessageController extends ApiController
 
         SendWhatsAppMessageJob::dispatch($message, $phoneNumber);
 
-                return ApiResponse::data([
+        return ApiResponse::data([
             'id' => $message->id,
             'status' => $message->status,
         ], 'Message queued for delivery.', 202);
@@ -82,7 +82,7 @@ class MessageController extends ApiController
             return ApiResponse::error('Message not found.', 404);
         }
 
-                return ApiResponse::data(
+        return ApiResponse::data(
             $message->load(['contact', 'conversation', 'statuses'])
         );
     }
@@ -103,7 +103,7 @@ class MessageController extends ApiController
             ->where('status', 'connected')
             ->first();
 
-        if (!$phoneNumber) {
+        if (! $phoneNumber) {
             return ApiResponse::error(
                 'No connected WhatsApp phone number for this company.',
                 409
@@ -135,14 +135,14 @@ class MessageController extends ApiController
             );
         } catch (\RuntimeException $e) {
             return ApiResponse::error(
-                'Failed to upload media: ' . $e->getMessage(),
+                'Failed to upload media: '.$e->getMessage(),
                 422
             );
         }
 
         $mediaId = $uploadResponse['id'] ?? null;
 
-        if (!$mediaId) {
+        if (! $mediaId) {
             return ApiResponse::error(
                 'Media upload did not return an ID.',
                 502
@@ -172,7 +172,7 @@ class MessageController extends ApiController
             'id' => $message->id,
             'status' => $message->status,
             'media_id' => $mediaId,
-                ], 'Media message queued for delivery.', 202);
+        ], 'Media message queued for delivery.', 202);
     }
 
     /**
@@ -193,6 +193,3 @@ class MessageController extends ApiController
         );
     }
 }
-
-
-

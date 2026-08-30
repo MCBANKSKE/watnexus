@@ -18,7 +18,7 @@ trait InteractsWithWhatsAppApi
     protected function apiBaseUrl(): string
     {
         return rtrim(config('services.whatsapp.api_url', 'https://graph.facebook.com'), '/')
-            . '/' . config('services.whatsapp.graph_version', 'v23.0');
+            .'/'.config('services.whatsapp.graph_version', 'v23.0');
     }
 
     /**
@@ -49,7 +49,7 @@ trait InteractsWithWhatsAppApi
         if (empty($token)) {
             throw new RuntimeException(
                 'WhatsApp access token is missing for phone number '
-                . $phoneNumber->phone_number_id . '.'
+                .$phoneNumber->phone_number_id.'.'
             );
         }
 

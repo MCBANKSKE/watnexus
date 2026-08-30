@@ -16,17 +16,17 @@ class VerifyWebhookSignatureService
     {
         $signature = $request->header('X-Hub-Signature-256');
 
-        if (!$signature) {
+        if (! $signature) {
             return false;
         }
 
         $secret = config('services.whatsapp.app_secret');
 
-        if (!$secret) {
+        if (! $secret) {
             return false;
         }
 
-        $expected = 'sha256=' . hash_hmac(
+        $expected = 'sha256='.hash_hmac(
             'sha256',
             $payload ?? (string) $request->getContent(),
             $secret
@@ -42,7 +42,7 @@ class VerifyWebhookSignatureService
     {
         $expected = config('services.whatsapp.webhook_verify_token');
 
-        if (!$expected) {
+        if (! $expected) {
             return false;
         }
 

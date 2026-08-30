@@ -58,7 +58,7 @@ class Company extends Model
         $counter = 1;
 
         while (static::where('slug', $slug)->exists()) {
-            $slug = $originalSlug . '-' . $counter;
+            $slug = $originalSlug.'-'.$counter;
             $counter++;
         }
 
@@ -80,7 +80,7 @@ class Company extends Model
     {
         return $this->status === 'suspended';
     }
-    
+
     /**
      * Get the country associated with the company.
      */
@@ -88,7 +88,7 @@ class Company extends Model
     {
         return $this->belongsTo(Country::class, 'country_id');
     }
-    
+
     /**
      * Get the currency associated with the company.
      */

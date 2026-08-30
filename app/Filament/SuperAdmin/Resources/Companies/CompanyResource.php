@@ -9,21 +9,23 @@ use App\Filament\SuperAdmin\Resources\Companies\Schemas\CompanyForm;
 use App\Filament\SuperAdmin\Resources\Companies\Tables\CompaniesTable;
 use App\Models\Company;
 use BackedEnum;
-use UnitEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
-use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use UnitEnum;
 
 class CompanyResource extends Resource
 {
     protected static ?string $model = Company::class;
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-building-office';
+
     protected static string|UnitEnum|null $navigationGroup = 'Company Management';
+
     protected static ?string $navigationLabel = 'Companies';
+
     protected static ?int $navigationSort = 1;
 
     public static function form(Schema $schema): Schema

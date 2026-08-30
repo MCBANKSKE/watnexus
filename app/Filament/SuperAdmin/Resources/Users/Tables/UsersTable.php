@@ -24,37 +24,37 @@ class UsersTable
                     ->label('Name')
                     ->searchable()
                     ->sortable(),
-                    
+
                 TextColumn::make('email')
                     ->label('Email')
                     ->searchable()
                     ->sortable(),
-                    
+
                 TextColumn::make('company.name')
                     ->label('Company')
                     ->searchable()
                     ->sortable(),
-                    
+
                 TextColumn::make('roles.name')
                     ->label('Roles')
                     ->badge()
                     ->color('success')
                     ->formatStateUsing(fn ($state) => is_array($state) ? implode(', ', $state) : $state),
-                    
+
                 IconColumn::make('is_superadmin')
                     ->label('Admin')
                     ->boolean(),
-                    
+
                 IconColumn::make('is_active')
                     ->label('Active')
                     ->boolean(),
-                    
+
                 TextColumn::make('last_login_at')
                     ->label('Last Login')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                    
+
                 TextColumn::make('created_at')
                     ->label('Created')
                     ->dateTime()

@@ -1,8 +1,23 @@
 <?php
 
+use App\Exceptions\ApiException;
+use App\Http\Middleware\AuthenticateApiKey;
+use App\Http\Middleware\CheckCompanySetup;
+use App\Http\Middleware\EnsureApiKeyPermission;
+use App\Http\Middleware\LogApiRequests;
+use App\Http\Middleware\VerifyRole;
+use App\Support\ApiResponse;
+use Illuminate\Auth\AuthenticationException;
+use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
+use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Http\Request;
+use Illuminate\Session\Middleware\AuthenticateSession;
+use Illuminate\Validation\ValidationException;
+use Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -13,19 +28,21 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
-            'auth.apikey' => \App\Http\Middleware\AuthenticateApiKey::class,
-            'log.api' => \App\Http\Middleware\LogApiRequests::class,
-            'api.key.permission' => \App\Http\Middleware\EnsureApiKeyPermission::class,
+            'auth.apikey' => AuthenticateApiKey::class,
+            'log.api' => LogApiRequests::class,
+            'api.key.permission' => EnsureApiKeyPermission::class,
+            'role' => VerifyRole::class,
+            'company.setup' => CheckCompanySetup::class,
         ]);
 
         $middleware->api(append: [
-            \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
+            EnsureFrontendRequestsAreStateful::class,
         ]);
 
         $middleware->web(append: [
-            \Illuminate\Session\Middleware\AuthenticateSession::class,
-            \Illuminate\Cookie\Middleware\EncryptCookies::class,
-            \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
+            AuthenticateSession::class,
+            EncryptCookies::class,
+            AddQueuedCookiesToResponse::class,
         ]);
 
         // Meta sends POST webhooks without a CSRF token.
@@ -34,27 +51,27 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        $exceptions->render(function (\App\Exceptions\ApiException $e, \Illuminate\Http\Request $request) {
+        $exceptions->render(function (ApiException $e, Request $request) {
             if ($request->is('api/*')) {
                 return $e->render($request);
             }
         });
 
-        $exceptions->render(function (\Illuminate\Validation\ValidationException $e, \Illuminate\Http\Request $request) {
+        $exceptions->render(function (ValidationException $e, Request $request) {
             if ($request->is('api/*')) {
-                return \App\Support\ApiResponse::validation($e->errors());
+                return ApiResponse::validation($e->errors());
             }
         });
 
-        $exceptions->render(function (\Symfony\Component\HttpKernel\Exception\NotFoundHttpException $e, \Illuminate\Http\Request $request) {
+        $exceptions->render(function (NotFoundHttpException $e, Request $request) {
             if ($request->is('api/*')) {
-                return \App\Support\ApiResponse::error('Resource not found.', 404);
+                return ApiResponse::error('Resource not found.', 404);
             }
         });
 
-        $exceptions->render(function (\Illuminate\Auth\AuthenticationException $e, \Illuminate\Http\Request $request) {
+        $exceptions->render(function (AuthenticationException $e, Request $request) {
             if ($request->is('api/*')) {
-                return \App\Support\ApiResponse::error('Unauthenticated.', 401);
+                return ApiResponse::error('Unauthenticated.', 401);
             }
         });
     })->create();

@@ -29,7 +29,7 @@ class SendMediaMessageService
     /**
      * Send a media message using an already-uploaded media ID.
      *
-     * @param array<string, mixed> $options Extra media attributes (caption, filename, ...).
+     * @param  array<string, mixed>  $options  Extra media attributes (caption, filename, ...).
      */
     public function handle(
         WhatsAppPhoneNumber $phoneNumber,
@@ -38,7 +38,7 @@ class SendMediaMessageService
         string $type,
         array $options = []
     ): array {
-        if (!in_array($type, $this->supportedTypes, true)) {
+        if (! in_array($type, $this->supportedTypes, true)) {
             throw new RuntimeException("Unsupported WhatsApp media type: {$type}");
         }
 
@@ -55,13 +55,13 @@ class SendMediaMessageService
         $response = $this->authenticatedHttp(
             $this->accessTokenFor($phoneNumber)
         )->post(
-            $this->apiBaseUrl() . '/' . $phoneNumber->phone_number_id . '/messages',
+            $this->apiBaseUrl().'/'.$phoneNumber->phone_number_id.'/messages',
             $payload
         );
 
-        if (!$response->successful()) {
+        if (! $response->successful()) {
             throw new RuntimeException(
-                "Failed to send WhatsApp {$type} message: " . $response->body()
+                "Failed to send WhatsApp {$type} message: ".$response->body()
             );
         }
 

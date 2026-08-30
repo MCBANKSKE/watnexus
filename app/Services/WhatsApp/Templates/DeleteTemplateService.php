@@ -21,9 +21,9 @@ class DeleteTemplateService
         MessageTemplate $template
     ): bool {
         $endpoint = $template->whatsapp_template_id
-            ? $this->apiBaseUrl() . '/' . $template->whatsapp_template_id
-            : $this->apiBaseUrl() . '/' . $account->business_account_id
-                . '/message_templates?name=' . urlencode($template->name);
+            ? $this->apiBaseUrl().'/'.$template->whatsapp_template_id
+            : $this->apiBaseUrl().'/'.$account->business_account_id
+                .'/message_templates?name='.urlencode($template->name);
 
         $response = $this->authenticatedHttp($account->access_token)
             ->delete($endpoint);

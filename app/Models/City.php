@@ -12,7 +12,7 @@ class City extends Model
 
     protected $fillable = [
         'name', 'state_id', 'state_code', 'country_id', 'country_code',
-        'latitude', 'longitude', 'flag', 'wikiDataId'
+        'latitude', 'longitude', 'flag', 'wikiDataId',
     ];
 
     protected $casts = [

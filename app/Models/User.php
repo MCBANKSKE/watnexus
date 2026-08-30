@@ -2,22 +2,35 @@
 
 namespace App\Models;
 
+use Database\Factories\UserFactory;
+use Filament\Models\Contracts\FilamentUser;
+use Filament\Panel;
+use Illuminate\Auth\Passwords\CanResetPassword;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use App\Notifications\CustomResetPassword;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
-use Illuminate\Auth\Passwords\CanResetPassword;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 
-class User extends Authenticatable implements MustVerifyEmail
+class User extends Authenticatable implements FilamentUser, MustVerifyEmail
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasApiTokens, HasFactory, Notifiable, HasRoles, CanResetPassword;
+    /**
+     * Determine whether the user can access a Filament panel.
+     */
+    public function canAccessPanel(Panel $panel): bool
+    {
+        return match ($panel->getId()) {
+            'super-admin' => $this->isSuperAdmin(),
+            'admin' => $this->is_superadmin
+                || $this->companies()->wherePivot('is_active', true)->exists(),
+            default => false,
+        };
+    }
+
+    /** @use HasFactory<UserFactory> */
+    use CanResetPassword, HasApiTokens, HasFactory, HasRoles, Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -28,8 +41,10 @@ class User extends Authenticatable implements MustVerifyEmail
         'name',
         'email',
         'password',
-        'is_superadmin',  
-        'phone',
+        'is_superadmin',
+        'provider',
+        'google_id',
+        'avatar',
     ];
 
     /**
@@ -52,7 +67,7 @@ class User extends Authenticatable implements MustVerifyEmail
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
-            
+
         ];
     }
 
@@ -170,5 +185,4 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->hasMany(ContactList::class, 'created_by');
     }
-
 }

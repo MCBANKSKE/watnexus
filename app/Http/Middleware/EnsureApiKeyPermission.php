@@ -23,7 +23,7 @@ class EnsureApiKeyPermission
     {
         $apiKey = $request->attributes->get('apiKey');
 
-        if (!$apiKey || !$this->apiKeyService->hasPermission($apiKey, $permission)) {
+        if (! $apiKey || ! $this->apiKeyService->hasPermission($apiKey, $permission)) {
             return ApiResponse::error(
                 'This API key does not have the required permission.',
                 403

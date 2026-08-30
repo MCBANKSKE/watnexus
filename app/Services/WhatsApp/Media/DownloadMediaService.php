@@ -25,17 +25,17 @@ class DownloadMediaService
         bool $fetchContent = false
     ): array {
         $response = $this->authenticatedHttp($account->access_token)
-            ->get($this->apiBaseUrl() . '/' . $mediaId);
+            ->get($this->apiBaseUrl().'/'.$mediaId);
 
-        if (!$response->successful()) {
+        if (! $response->successful()) {
             throw new RuntimeException(
-                'Unable to retrieve WhatsApp media metadata: ' . $response->body()
+                'Unable to retrieve WhatsApp media metadata: '.$response->body()
             );
         }
 
         $metadata = $response->json();
 
-        if (!$fetchContent || empty($metadata['url'])) {
+        if (! $fetchContent || empty($metadata['url'])) {
             return $metadata;
         }
 

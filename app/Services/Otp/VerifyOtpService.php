@@ -18,7 +18,7 @@ class VerifyOtpService
             ->where('reference', $reference)
             ->first();
 
-        if (!$verification) {
+        if (! $verification) {
             return false;
         }
 

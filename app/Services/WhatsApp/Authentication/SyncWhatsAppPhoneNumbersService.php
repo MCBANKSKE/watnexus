@@ -53,24 +53,24 @@ class SyncWhatsAppPhoneNumbersService
      */
     protected function fetchPhoneNumbers(WhatsAppAccount $account): array
     {
-        if (!$account->access_token) {
+        if (! $account->access_token) {
             throw new RuntimeException('WhatsApp access token is missing.');
         }
 
-        if (!$account->business_account_id) {
+        if (! $account->business_account_id) {
             throw new RuntimeException('WhatsApp Business Account ID is missing.');
         }
 
         $response = $this->authenticatedHttp($account->access_token)
             ->get(
-                $this->apiBaseUrl() . '/' .
-                $account->business_account_id . '/phone_numbers'
+                $this->apiBaseUrl().'/'.
+                $account->business_account_id.'/phone_numbers'
             );
 
-        if (!$response->successful()) {
+        if (! $response->successful()) {
             throw new RuntimeException(
                 'Unable to retrieve WhatsApp phone numbers: '
-                . $response->body()
+                .$response->body()
             );
         }
 

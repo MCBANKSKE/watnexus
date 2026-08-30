@@ -63,7 +63,7 @@ class OtpController extends ApiController
             $request->code
         );
 
-        if (!$valid) {
+        if (! $valid) {
             return ApiResponse::error(
                 'Invalid, used or expired OTP.',
                 400

@@ -22,7 +22,7 @@ class WebhookSignatureTest extends TestCase
     private function signedRequest(string $payload, ?string $signature = null): Request
     {
         $secret = config('services.whatsapp.app_secret');
-        $sig = $signature ?? 'sha256=' . hash_hmac('sha256', $payload, $secret);
+        $sig = $signature ?? 'sha256='.hash_hmac('sha256', $payload, $secret);
 
         $request = new Request(
             query: [],
@@ -120,7 +120,7 @@ class WebhookSignatureTest extends TestCase
     {
         $payload = json_encode(['entry' => [['changes' => [['field' => 'messages', 'value' => ['messaging_product' => 'whatsapp']]]]]]);
         $secret = config('services.whatsapp.app_secret');
-        $signature = 'sha256=' . hash_hmac('sha256', $payload, $secret);
+        $signature = 'sha256='.hash_hmac('sha256', $payload, $secret);
 
         $response = $this->withHeader('X-Hub-Signature-256', $signature)
             ->postJson('/api/v1/webhooks/whatsapp', json_decode($payload, true));

@@ -2,89 +2,101 @@
 
 namespace App\Services\Campaign;
 
+use App\Jobs\FinalizeCampaignJob;
+use App\Jobs\SendWhatsAppMessageJob;
 use App\Models\Campaign;
 use App\Models\Contact;
+use App\Models\Conversation;
 use App\Models\Message;
 use App\Models\WhatsAppAccount;
 use App\Models\WhatsAppPhoneNumber;
-use App\Services\WhatsApp\Messaging\SendTemplateMessageService;
 use Illuminate\Support\Facades\DB;
 use RuntimeException;
 
 /**
  * Dispatch a campaign to its recipients.
+ *
+ * The campaign is marked `running` when dispatched; every recipient
+ * message is created in chunked batches and queued for delivery, and
+ * a FinalizeCampaignJob completes the campaign once all messages
+ * reach a terminal status. Recipients are never fully loaded into
+ * memory, so very large campaigns are safe.
  */
 class SendCampaignService
 {
-    public function __construct(
-        protected SendTemplateMessageService $sendTemplateMessageService
-    ) {}
-
     /**
-     * Send the campaign using the given (or the company's default) phone number.
+     * Number of recipients processed per chunk.
      */
-    public function handle(
-        Campaign $campaign,
-        ?WhatsAppPhoneNumber $phoneNumber = null
-    ): Campaign {
+    protected const CHUNK_SIZE = 200;
+
+    public function handle(Campaign $campaign): Campaign
+    {
         if ($campaign->isCompleted() || $campaign->isRunning()) {
             throw new RuntimeException('Campaign has already been dispatched.');
         }
 
-        if (!$campaign->messageTemplate?->isApproved()) {
+        if (! $campaign->messageTemplate?->isApproved()) {
             throw new RuntimeException(
                 'Campaign requires an approved message template.'
             );
         }
 
-        $phoneNumber ??= $this->resolveDefaultPhoneNumber($campaign);
+        $phoneNumber = $this->resolveDefaultPhoneNumber($campaign);
 
-        $contacts = $this->resolveRecipients($campaign);
+        $campaign->update([
+            'status' => 'running',
+            'started_at' => now(),
+        ]);
 
-        return DB::transaction(function () use (
-            $campaign,
-            $phoneNumber,
-            $contacts
-        ): Campaign {
-            $campaign->update([
-                'status' => 'running',
-                'started_at' => now(),
-                'total_recipients' => $contacts->count(),
-            ]);
+        $total = $this->dispatchToRecipients($campaign, $phoneNumber);
 
-            foreach ($contacts as $contact) {
-                $this->sendToRecipient($campaign, $phoneNumber, $contact);
-            }
+        $campaign->update(['total_recipients' => $total]);
 
-            $campaign->refresh();
+        // Finalize (mark completed) once every message reaches a
+        // terminal status — handled asynchronously by the worker.
+        FinalizeCampaignJob::dispatch($campaign);
 
-            $campaign->update([
-                'status' => 'completed',
-                'completed_at' => now(),
-            ]);
-
-            return $campaign;
-        });
+        return $campaign;
     }
 
     /**
-     * Build the union of direct contacts and contacts from lists.
-     *
-     * @return \Illuminate\Support\Collection<int, Contact>
+     * Chunk through direct contacts and contact-list members,
+     * queueing one message per unique recipient.
      */
-    protected function resolveRecipients(Campaign $campaign): \Illuminate\Support\Collection
-    {
-        $contacts = collect();
+    protected function dispatchToRecipients(
+        Campaign $campaign,
+        WhatsAppPhoneNumber $phoneNumber
+    ): int {
+        $seenContactIds = [];
+        $total = 0;
 
-        $contacts = $contacts->concat($campaign->contacts->all());
+        $processChunk = function ($contacts) use (
+            $campaign,
+            $phoneNumber,
+            &$seenContactIds,
+            &$total
+        ): void {
+            foreach ($contacts as $contact) {
+                if (isset($seenContactIds[$contact->id])) {
+                    continue;
+                }
+
+                $seenContactIds[$contact->id] = true;
+                $total++;
+
+                $this->sendToRecipient($campaign, $phoneNumber, $contact);
+            }
+        };
+
+        $campaign->contacts()
+            ->chunkById(self::CHUNK_SIZE, $processChunk, 'contacts.id');
 
         foreach ($campaign->contactLists as $list) {
-            $contacts = $contacts->concat($list->contacts->all());
+            $list->contacts()
+                ->chunkById(self::CHUNK_SIZE, $processChunk, 'contacts.id');
         }
 
-        return $contacts
-            ->unique('id')
-            ->values();
+        return $total;
     }
 
     /**
@@ -98,7 +110,7 @@ class SendCampaignService
             ->where('status', 'connected')
             ->first();
 
-        if (!$phoneNumber) {
+        if (! $phoneNumber) {
             throw new RuntimeException(
                 'No connected WhatsApp phone number is available for this campaign.'
             );
@@ -108,7 +120,7 @@ class SendCampaignService
     }
 
     /**
-     * Persist the recipient message and send it via WhatsApp.
+     * Persist the recipient message and queue it for delivery.
      */
     protected function sendToRecipient(
         Campaign $campaign,
@@ -117,6 +129,7 @@ class SendCampaignService
     ): void {
         $message = Message::create([
             'company_id' => $campaign->company_id,
+            'conversation_id' => $this->resolveConversationId($campaign, $phoneNumber, $contact),
             'whatsapp_phone_number_id' => $phoneNumber->id,
             'contact_id' => $contact->id,
             'message_template_id' => $campaign->message_template_id,
@@ -128,7 +141,7 @@ class SendCampaignService
             'queued_at' => now(),
         ]);
 
-                $this->syncPivot($campaign, $contact, [
+        $this->syncPivot($campaign, $contact, [
             'status' => 'queued',
             'message_id' => $message->id,
             'queued_at' => now(),
@@ -136,11 +149,35 @@ class SendCampaignService
 
         // Link the message to the campaign so campaign stats
         // can be updated from webhook status receipts.
-        if (!$campaign->messages()->whereKey($message->id)->exists()) {
+        if (! $campaign->messages()->whereKey($message->id)->exists()) {
             $campaign->messages()->attach($message->id);
         }
 
-        \App\Jobs\SendWhatsAppMessageJob::dispatch($message, $phoneNumber);
+        // Only dispatch once the surrounding transaction commits
+        // (safe even when called outside a transaction).
+        DB::afterCommit(function () use ($message, $phoneNumber) {
+            SendWhatsAppMessageJob::dispatch($message, $phoneNumber);
+        });
+    }
+
+    /**
+     * Resolve (or create) the conversation for a campaign recipient.
+     */
+    protected function resolveConversationId(
+        Campaign $campaign,
+        WhatsAppPhoneNumber $phoneNumber,
+        Contact $contact
+    ): int {
+        $conversation = Conversation::query()->firstOrCreate(
+            [
+                'company_id' => $campaign->company_id,
+                'whatsapp_phone_number_id' => $phoneNumber->id,
+                'contact_id' => $contact->id,
+            ],
+            ['status' => 'open']
+        );
+
+        return $conversation->id;
     }
 
     /**

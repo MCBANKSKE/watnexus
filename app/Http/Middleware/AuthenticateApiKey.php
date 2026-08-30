@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use App\Services\ApiKey\ApiKeyService;
 use App\Support\ApiResponse;
+use App\Support\CompanyContext;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -17,7 +18,8 @@ use Symfony\Component\HttpFoundation\Response;
 class AuthenticateApiKey
 {
     public function __construct(
-        protected ApiKeyService $apiKeyService
+        protected ApiKeyService $apiKeyService,
+        protected CompanyContext $companyContext
     ) {}
 
     public function handle(Request $request, Closure $next): Response
@@ -25,17 +27,17 @@ class AuthenticateApiKey
         $token = $request->bearerToken()
             ?? $request->header('X-API-Key');
 
-        if (!$token) {
+        if (! $token) {
             return ApiResponse::error('Missing API key.', 401);
         }
 
         $apiKey = $this->apiKeyService->resolve($token);
 
-        if (!$apiKey) {
+        if (! $apiKey) {
             return ApiResponse::error('Invalid or inactive API key.', 401);
         }
 
-        if (!$this->apiKeyService->isIpAllowed($apiKey, $request->ip())) {
+        if (! $this->apiKeyService->isIpAllowed($apiKey, $request->ip())) {
             return ApiResponse::error(
                 'This API key is not allowed from your IP address.',
                 403
@@ -44,9 +46,12 @@ class AuthenticateApiKey
 
         $this->apiKeyService->touchLastUsed($apiKey);
 
-        // Expose the authenticated key + company for the rest of the request.
+        // Expose the authenticated key + company for the rest of the request,
+        // and register the company in the shared context so the
+        // BelongsToCompany trait and CompanyScope apply consistently.
         $request->attributes->set('apiKey', $apiKey);
         $request->attributes->set('company', $apiKey->company);
+        $this->companyContext->set($apiKey->company);
 
         return $next($request);
     }

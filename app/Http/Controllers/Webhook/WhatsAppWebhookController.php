@@ -40,7 +40,7 @@ class WhatsAppWebhookController extends Controller
      */
     public function receive(Request $request)
     {
-        if (!$this->verifySignature->verify($request)) {
+        if (! $this->verifySignature->verify($request)) {
             // Always ack to avoid Meta retries when the signature is invalid.
             return response('Invalid signature.', 403);
         }

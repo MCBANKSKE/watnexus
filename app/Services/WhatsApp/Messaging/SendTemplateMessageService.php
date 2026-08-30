@@ -16,7 +16,7 @@ class SendTemplateMessageService
     /**
      * Send a template message.
      *
-     * @param array<int, array<string, mixed>> $components Template components (e.g. body/header).
+     * @param  array<int, array<string, mixed>>  $components  Template components (e.g. body/header).
      */
     public function handle(
         WhatsAppPhoneNumber $phoneNumber,
@@ -30,14 +30,14 @@ class SendTemplateMessageService
             'language' => ['code' => $language],
         ];
 
-        if (!empty($components)) {
+        if (! empty($components)) {
             $template['components'] = $components;
         }
 
         $response = $this->authenticatedHttp(
             $this->accessTokenFor($phoneNumber)
         )->post(
-            $this->apiBaseUrl() . '/' . $phoneNumber->phone_number_id . '/messages',
+            $this->apiBaseUrl().'/'.$phoneNumber->phone_number_id.'/messages',
             [
                 'messaging_product' => 'whatsapp',
                 'to' => $to,
@@ -46,9 +46,9 @@ class SendTemplateMessageService
             ]
         );
 
-        if (!$response->successful()) {
+        if (! $response->successful()) {
             throw new RuntimeException(
-                'Failed to send WhatsApp template message: ' . $response->body()
+                'Failed to send WhatsApp template message: '.$response->body()
             );
         }
 

@@ -14,7 +14,7 @@ class RecordUsageService
     /**
      * Create a usage record.
      *
-     * @param array<string, mixed> $metadata
+     * @param  array<string, mixed>  $metadata
      */
     public function handle(
         Company $company,

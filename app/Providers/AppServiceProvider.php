@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Support\ApiResponse;
+use App\Support\CompanyContext;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
@@ -14,7 +16,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->singleton(CompanyContext::class);
     }
 
     /**
@@ -34,7 +36,7 @@ class AppServiceProvider extends ServiceProvider
             return Limit::perMinute(120)
                 ->by($this->limiterKey($request))
                 ->response(function (Request $request, array $headers) {
-                    return \App\Support\ApiResponse::error(
+                    return ApiResponse::error(
                         'Too many requests. Please slow down.',
                         429
                     )->withHeaders($headers);
@@ -45,7 +47,7 @@ class AppServiceProvider extends ServiceProvider
             return Limit::perMinute(20)
                 ->by($this->limiterKey($request))
                 ->response(function (Request $request, array $headers) {
-                    return \App\Support\ApiResponse::error(
+                    return ApiResponse::error(
                         'Too many requests. Please slow down.',
                         429
                     )->withHeaders($headers);
@@ -61,9 +63,9 @@ class AppServiceProvider extends ServiceProvider
         $company = $request->attributes->get('company');
 
         if ($company) {
-            return 'company:' . $company->getKey();
+            return 'company:'.$company->getKey();
         }
 
-        return 'ip:' . ($request->ip() ?? 'unknown');
+        return 'ip:'.($request->ip() ?? 'unknown');
     }
 }

@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Contact extends Model
 {
-    use HasFactory, SoftDeletes;
+    use \App\Models\Concerns\BelongsToCompany, HasFactory, SoftDeletes;
 
     protected $fillable = [
         'company_id',

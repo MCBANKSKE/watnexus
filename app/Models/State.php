@@ -12,8 +12,8 @@ class State extends Model
     use HasFactory;
 
     protected $fillable = [
-        'name', 'country_id', 'country_code', 'fips_code', 'iso2', 
-        'latitude', 'longitude', 'flag', 'wikiDataId'
+        'name', 'country_id', 'country_code', 'fips_code', 'iso2',
+        'latitude', 'longitude', 'flag', 'wikiDataId',
     ];
 
     protected $casts = [

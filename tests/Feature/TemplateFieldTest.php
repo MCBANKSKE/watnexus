@@ -2,7 +2,6 @@
 
 namespace Tests\Feature;
 
-use App\Models\ApiKey;
 use App\Models\Company;
 use App\Models\MessageTemplate;
 use App\Models\User;

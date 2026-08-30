@@ -2,8 +2,9 @@
 
 namespace Tests\Feature;
 
-use App\Models\ApiKey;
+use App\Models\Campaign;
 use App\Models\Company;
+use App\Models\MessageTemplate;
 use App\Models\User;
 use App\Services\ApiKey\ApiKeyService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -79,7 +80,7 @@ class ApiKeyPermissionTest extends TestCase
     {
         [$company, $key] = $this->actingAsCompany('campaigns.read');
 
-        $service = app(\App\Services\ApiKey\ApiKeyService::class);
+        $service = app(ApiKeyService::class);
         $resolved = $service->resolve($key);
 
         // Direct test of hasPermission method
@@ -87,7 +88,7 @@ class ApiKeyPermissionTest extends TestCase
         $this->assertFalse($hasPermission, 'hasPermission should return false for campaigns.send');
 
         // Create a campaign so model binding doesn't return 404
-        $template = \App\Models\MessageTemplate::create([
+        $template = MessageTemplate::create([
             'company_id' => $company->id,
             'name' => 'test_tpl',
             'language' => 'en',
@@ -96,7 +97,7 @@ class ApiKeyPermissionTest extends TestCase
             'status' => 'draft',
         ]);
 
-        $campaign = \App\Models\Campaign::create([
+        $campaign = Campaign::create([
             'company_id' => $company->id,
             'name' => 'Test Campaign',
             'status' => 'draft',

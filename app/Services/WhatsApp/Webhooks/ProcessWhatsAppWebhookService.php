@@ -58,7 +58,7 @@ class ProcessWhatsAppWebhookService
      */
     protected function resolveAccount(?string $businessAccountId): ?WhatsAppAccount
     {
-        if (!$businessAccountId) {
+        if (! $businessAccountId) {
             return null;
         }
 
@@ -72,7 +72,7 @@ class ProcessWhatsAppWebhookService
      */
     protected function resolvePhoneNumber(?string $phoneNumberId): ?WhatsAppPhoneNumber
     {
-        if (!$phoneNumberId) {
+        if (! $phoneNumberId) {
             return null;
         }
 

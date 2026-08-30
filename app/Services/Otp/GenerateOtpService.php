@@ -8,7 +8,6 @@ use App\Models\OtpVerification;
 use App\Models\WhatsAppPhoneNumber;
 use App\Services\WhatsApp\Messaging\SendTemplateMessageService;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
 
 /**
  * Generate a new one-time password and persist it securely.
@@ -22,8 +21,7 @@ class GenerateOtpService
     /**
      * Create an OTP verification record.
      *
-     * @param array<int, string> $templateVariables Values for the template body placeholders.
-     *
+     * @param  array<int, string>  $templateVariables  Values for the template body placeholders.
      * @return array{verification: OtpVerification, plain_code?: string}
      */
     public function handle(
@@ -93,8 +91,7 @@ class GenerateOtpService
     /**
      * Build template "body" components with variables.
      *
-     * @param array<int, string> $variables
-     *
+     * @param  array<int, string>  $variables
      * @return array<int, array<string, mixed>>
      */
     protected function buildVariables(array $variables, string $code): array

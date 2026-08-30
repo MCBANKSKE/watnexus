@@ -17,12 +17,12 @@ class TestWhatsAppConnectionService
      */
     public function handle(WhatsAppAccount $account): bool
     {
-        if (!$account->business_account_id) {
+        if (! $account->business_account_id) {
             return false;
         }
 
         $response = $this->authenticatedHttp($account->access_token)
-            ->get($this->apiBaseUrl() . '/' . $account->business_account_id);
+            ->get($this->apiBaseUrl().'/'.$account->business_account_id);
 
         return $response->successful();
     }

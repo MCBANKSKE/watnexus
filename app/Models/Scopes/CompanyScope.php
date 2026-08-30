@@ -2,6 +2,7 @@
 
 namespace App\Models\Scopes;
 
+use App\Support\CompanyContext;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Scope;
@@ -11,23 +12,40 @@ class CompanyScope implements Scope
 {
     /**
      * Apply the scope to a given Eloquent query builder.
+     *
+     * Resolution order:
+     *  1. CompanyContext (set by API-key auth middleware).
+     *  2. Authenticated user's active company inside the admin panel.
      */
     public function apply(Builder $builder, Model $model): void
     {
-        // Only apply scope in admin panel
-        if (!$this->isAdminPanel()) {
+        $contextCompany = app(CompanyContext::class)->get();
+
+        if ($contextCompany) {
+            $builder->where(
+                $model->getTable().'.company_id',
+                $contextCompany->getKey()
+            );
+
             return;
         }
 
-        // Only apply if user is authenticated
+        if (! $this->isAdminPanel()) {
+            return;
+        }
+
         $user = Auth::user();
-        if (!$user) {
+
+        if (! $user || $user->isSuperAdmin()) {
             return;
         }
 
-        // Filter by user's company_id
-        if ($user->company_id) {
-            $builder->where($model->getTable() . '.company_id', $user->company_id);
+        $companyId = $user->companies()
+            ->wherePivot('is_active', true)
+            ->value('companies.id');
+
+        if ($companyId) {
+            $builder->where($model->getTable().'.company_id', $companyId);
         }
     }
 
@@ -37,6 +55,7 @@ class CompanyScope implements Scope
     protected function isAdminPanel(): bool
     {
         $currentPanel = filament()->getCurrentPanel()?->getId();
+
         return $currentPanel === 'admin';
     }
 }

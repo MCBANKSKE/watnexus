@@ -1,4 +1,4 @@
-@extends('layouts.auth')
+﻿@extends('layouts.auth')
 
 @section('title', 'Register — Nexus Invoicing')
 
@@ -26,9 +26,13 @@
                 </div>
 
                 <div class="field">
-                    <div class="input-group">
+                    <div class="input-group has-toggle">
                         <svg viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="9" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg>
-                        <input type="password" name="password" placeholder="Password" required>
+                        <input type="password" name="password" placeholder="Password" required autocomplete="current-password">
+                        <button type="button" class="pw-toggle" aria-label="Show password" aria-pressed="false">
+                            <svg class="icon-eye" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                            <svg class="icon-eye-off" viewBox="0 0 24 24"><path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19"/><path d="M14.12 14.12a3 3 0 11-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+                        </button>
                     </div>
                     @error('password')<div class="field-error">{{ $message }}</div>@enderror
                 </div>
@@ -40,6 +44,8 @@
                 </div>
 
                 <button type="submit" class="btn-primary wide">Sign in →</button>
+
+                @include('auth.partials.google_button')
             </form>
 
             <div class="auth-switch">
@@ -77,22 +83,32 @@
                 </div>
 
                 <div class="field">
-                    <div class="input-group">
+                    <div class="input-group has-toggle">
                         <svg viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="9" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg>
-                        <input type="password" name="password" placeholder="Password" required>
+                        <input type="password" name="password" placeholder="Password" required autocomplete="new-password">
+                        <button type="button" class="pw-toggle" aria-label="Show password" aria-pressed="false">
+                            <svg class="icon-eye" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                            <svg class="icon-eye-off" viewBox="0 0 24 24"><path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19"/><path d="M14.12 14.12a3 3 0 11-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+                        </button>
                     </div>
                     @error('password')<div class="field-error">{{ $message }}</div>@enderror
                 </div>
 
                 <div class="field">
-                    <div class="input-group">
+                    <div class="input-group has-toggle">
                         <svg viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="9" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg>
-                        <input type="password" name="password_confirmation" placeholder="Confirm Password" required>
+                        <input type="password" name="password_confirmation" placeholder="Confirm Password" required autocomplete="new-password">
+                        <button type="button" class="pw-toggle" aria-label="Show password" aria-pressed="false">
+                            <svg class="icon-eye" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                            <svg class="icon-eye-off" viewBox="0 0 24 24"><path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19"/><path d="M14.12 14.12a3 3 0 11-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+                        </button>
                     </div>
                     @error('password_confirmation')<div class="field-error">{{ $message }}</div>@enderror
                 </div>
 
                 <button type="submit" class="btn-primary wide">Create account →</button>
+
+                @include('auth.partials.google_button')
             </form>
 
             <div class="auth-switch">

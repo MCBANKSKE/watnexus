@@ -25,9 +25,9 @@ class UploadMediaService
     /**
      * Upload a local file or URL as media.
      *
-     * @param string      $source   Local absolute path or http(s) URL.
-     * @param string      $type     MIME type, e.g. image/jpeg.
-     * @param string|null $filename Optional filename sent to Meta.
+     * @param  string  $source  Local absolute path or http(s) URL.
+     * @param  string  $type  MIME type, e.g. image/jpeg.
+     * @param  string|null  $filename  Optional filename sent to Meta.
      */
     public function handle(
         WhatsAppPhoneNumber $phoneNumber,
@@ -50,16 +50,16 @@ class UploadMediaService
             ->asMultipart()
             ->attach('file', $content, $filename)
             ->post(
-                $this->apiBaseUrl() . '/' . $phoneNumber->phone_number_id . '/media',
+                $this->apiBaseUrl().'/'.$phoneNumber->phone_number_id.'/media',
                 [
                     'messaging_product' => 'whatsapp',
                     'type' => $type,
                 ]
             );
 
-        if (!$response->successful()) {
+        if (! $response->successful()) {
             throw new RuntimeException(
-                'Failed to upload WhatsApp media: ' . $response->body()
+                'Failed to upload WhatsApp media: '.$response->body()
             );
         }
 
@@ -81,7 +81,7 @@ class UploadMediaService
             return $content;
         }
 
-        if (!is_file($source) || !is_readable($source)) {
+        if (! is_file($source) || ! is_readable($source)) {
             throw new RuntimeException("Media file is not readable: {$source}");
         }
 

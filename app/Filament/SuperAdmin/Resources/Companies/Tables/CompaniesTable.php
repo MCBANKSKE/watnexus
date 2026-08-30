@@ -3,13 +3,12 @@
 namespace App\Filament\SuperAdmin\Resources\Companies\Tables;
 
 use App\Models\Company;
-use App\Services\CompanyPdfService;
+use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ForceDeleteBulkAction;
 use Filament\Actions\RestoreBulkAction;
-use Filament\Actions\Action;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\TrashedFilter;
@@ -31,9 +30,8 @@ class CompaniesTable
                     ->label('Contact')
                     ->description(fn ($record): string => $record->phone)
                     ->wrap()
-                    //->icon('heroicon-o-phone')
+                    // ->icon('heroicon-o-phone')
                     ->searchable(),
-                
 
                 TextColumn::make('country.name')
                     ->label('Country')
@@ -57,12 +55,10 @@ class CompaniesTable
                 TextColumn::make('base_to_default_rate')
                     ->label('Base → Default Rate')
                     ->getStateUsing(fn ($record) => $record->base_to_default_rate
-                        ? number_format($record->base_to_default_rate, 6) . ' ' . ($record->defaultCurrency?->currency_symbol ?? '')
+                        ? number_format($record->base_to_default_rate, 6).' '.($record->defaultCurrency?->currency_symbol ?? '')
                         : '-')
                     ->visible(fn ($record) => $record && $record->base_currency_id !== $record->default_currency_id)
                     ->searchable(),
-
-                
 
                 IconColumn::make('is_active')
                     ->label('Active')

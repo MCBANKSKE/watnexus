@@ -86,14 +86,14 @@ class LogApiRequests
      */
     protected function responsePayload(Response $response): ?array
     {
-        if (!$response instanceof JsonResponse) {
+        if (! $response instanceof JsonResponse) {
             return null;
         }
 
         try {
             $decoded = json_decode((string) $response->getContent(), true);
 
-            if (!is_array($decoded)) {
+            if (! is_array($decoded)) {
                 return null;
             }
 

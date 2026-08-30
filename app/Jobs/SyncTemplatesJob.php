@@ -2,8 +2,8 @@
 
 namespace App\Jobs;
 
-use App\Services\WhatsApp\Templates\SyncTemplatesService;
 use App\Models\WhatsAppAccount;
+use App\Services\WhatsApp\Templates\SyncTemplatesService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;

@@ -40,7 +40,7 @@ class ApiResponse
     /**
      * Error response.
      *
-     * @param array<string, mixed>|null $errors Field-level validation errors.
+     * @param  array<string, mixed>|null  $errors  Field-level validation errors.
      */
     public static function error(
         string $message,
@@ -63,7 +63,7 @@ class ApiResponse
     /**
      * Validation error response (422).
      *
-     * @param array<string, mixed> $errors
+     * @param  array<string, mixed>  $errors
      */
     public static function validation(array $errors): JsonResponse
     {

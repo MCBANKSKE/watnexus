@@ -14,9 +14,10 @@ use InvalidArgumentException;
 class ApiKeyService
 {
     protected const PREFIX_LENGTH = 12;
+
     protected const SECRET_LENGTH = 32;
 
-       /**
+    /**
      * @var list<string>
      */
     protected const ALLOWED_PERMISSIONS = [
@@ -37,10 +38,9 @@ class ApiKeyService
     /**
      * Create a new API key for a company.
      *
-     * @param array<int, string> $permissions
-     * @param array<int, string> $allowedIps
-     * @param array<string, mixed> $metadata
-     *
+     * @param  array<int, string>  $permissions
+     * @param  array<int, string>  $allowedIps
+     * @param  array<string, mixed>  $metadata
      * @return array{api_key: ApiKey, plain_text_key: string}
      */
     public function generate(
@@ -85,7 +85,7 @@ class ApiKeyService
      */
     public function resolve(?string $plainTextKey): ?ApiKey
     {
-        if (!$plainTextKey) {
+        if (! $plainTextKey) {
             return null;
         }
 
@@ -102,15 +102,15 @@ class ApiKeyService
             ->where('key_prefix', $prefix)
             ->first();
 
-        if (!$apiKey) {
+        if (! $apiKey) {
             return null;
         }
 
-        if (!$apiKey->canBeUsed()) {
+        if (! $apiKey->canBeUsed()) {
             return null;
         }
 
-        if (!hash_equals($apiKey->key_hash, $this->hashSecret($secret))) {
+        if (! hash_equals($apiKey->key_hash, $this->hashSecret($secret))) {
             return null;
         }
 
@@ -195,7 +195,7 @@ class ApiKeyService
      */
     protected function format(string $prefix, string $secret): string
     {
-        return $prefix . '.' . $secret;
+        return $prefix.'.'.$secret;
     }
 
     /**
@@ -208,7 +208,7 @@ class ApiKeyService
 
     protected function randomPrefix(): string
     {
-        return 'wax_' . Str::random(self::PREFIX_LENGTH);
+        return 'wax_'.Str::random(self::PREFIX_LENGTH);
     }
 
     protected function randomSecret(): string
@@ -217,12 +217,12 @@ class ApiKeyService
     }
 
     /**
-     * @param array<int, string> $permissions
+     * @param  array<int, string>  $permissions
      */
     protected function assertValidPermissions(array $permissions): void
     {
         foreach ($permissions as $permission) {
-            if (!in_array($permission, self::ALLOWED_PERMISSIONS, true)) {
+            if (! in_array($permission, self::ALLOWED_PERMISSIONS, true)) {
                 throw new InvalidArgumentException(
                     "Invalid API key permission: {$permission}"
                 );

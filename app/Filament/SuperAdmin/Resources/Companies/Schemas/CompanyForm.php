@@ -6,15 +6,14 @@ use App\Models\BankTemplate;
 use App\Models\Country;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Repeater;
-use Filament\Schemas\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
-use Filament\Forms\Components\Hidden;
 use Filament\Schemas\Components\Grid;
-use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 
@@ -113,12 +112,12 @@ class CompanyForm
                     ->image()
                     ->maxSize(5120)
                     ->imageEditor()
-                    //->columnSpanFull()
-                    ->getUploadedFileNameForStorageUsing(fn ($file, callable $get) => ($get('id') ?? 'temp') . '/logo.' . $file->getClientOriginalExtension()),
+                    // ->columnSpanFull()
+                    ->getUploadedFileNameForStorageUsing(fn ($file, callable $get) => ($get('id') ?? 'temp').'/logo.'.$file->getClientOriginalExtension()),
 
                 Hidden::make('logo_source')
                     ->default('shared'),
-                    //->helperText('Select which application uploaded this logo to help with path resolution'),
+                // ->helperText('Select which application uploaded this logo to help with path resolution'),
             ]);
     }
 
@@ -213,7 +212,7 @@ class CompanyForm
                     ->columns(2)
                     ->schema(self::bankRepeaterSchema())
                     ->defaultItems(1)
-                    
+
                     ->addActionLabel('Add Bank Account'),
             ])
             ->columnSpanFull();

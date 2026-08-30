@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class MessageTemplate extends Model
 {
-    use HasFactory;
+    use \App\Models\Concerns\BelongsToCompany, HasFactory;
 
     protected $fillable = [
         'company_id',

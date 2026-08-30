@@ -9,7 +9,7 @@ use Illuminate\Support\Str;
 
 class OtpVerification extends Model
 {
-    use HasFactory;
+    use \App\Models\Concerns\BelongsToCompany, HasFactory;
 
     protected $fillable = [
         'company_id',
@@ -77,7 +77,7 @@ class OtpVerification extends Model
     public static function generateReference(): string
     {
         do {
-            $reference = 'otp_' . Str::lower(Str::random(24));
+            $reference = 'otp_'.Str::lower(Str::random(24));
         } while (static::where('reference', $reference)->exists());
 
         return $reference;

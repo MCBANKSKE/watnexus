@@ -51,14 +51,14 @@ class MessageStatusService
         ?string $errorMessage = null,
         ?array $metadata = null
     ): bool {
-        if (!in_array($status, self::VALID_STATUSES, true)) {
+        if (! in_array($status, self::VALID_STATUSES, true)) {
             return false;
         }
 
         // Refuse invalid regressions (unless retrying a failed message).
         if ($message->status !== null
             && $message->status !== 'failed'
-            && !in_array($message->status, self::PROGRESSION[$status], true)) {
+            && ! in_array($message->status, self::PROGRESSION[$status], true)) {
             return false;
         }
 

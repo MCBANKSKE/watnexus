@@ -86,17 +86,17 @@ class ProcessWebhookEventJob implements ShouldQueue
     /**
      * Route the change to the right handler.
      *
-     * @param array<string, mixed> $value
+     * @param  array<string, mixed>  $value
      */
     protected function dispatchType(array $value, MessageStatusService $statusService): void
     {
-        if (!empty($value['statuses'])) {
+        if (! empty($value['statuses'])) {
             foreach ($value['statuses'] as $status) {
                 $this->handleStatusUpdate($status, $statusService);
             }
         }
 
-        if (!empty($value['messages'])) {
+        if (! empty($value['messages'])) {
             foreach ($value['messages'] as $inbound) {
                 $this->handleInboundMessage($value, $inbound);
             }
@@ -106,7 +106,7 @@ class ProcessWebhookEventJob implements ShouldQueue
     /**
      * Apply a delivery/read/failed receipt to an outbound message.
      *
-     * @param array<string, mixed> $statusReceipt
+     * @param  array<string, mixed>  $statusReceipt
      */
     protected function handleStatusUpdate(
         array $statusReceipt,
@@ -114,7 +114,7 @@ class ProcessWebhookEventJob implements ShouldQueue
     ): void {
         $whatsappMessageId = $statusReceipt['id'] ?? null;
 
-        if (!$whatsappMessageId) {
+        if (! $whatsappMessageId) {
             return;
         }
 
@@ -122,7 +122,7 @@ class ProcessWebhookEventJob implements ShouldQueue
             ->where('whatsapp_message_id', $whatsappMessageId)
             ->first();
 
-        if (!$message) {
+        if (! $message) {
             return;
         }
 
@@ -141,23 +141,24 @@ class ProcessWebhookEventJob implements ShouldQueue
             $this->updateCampaignStats($message);
         }
     }
-/**
+
+    /**
      * Store an inbound message and ensure its contact + conversation exist.
      *
-     * @param array<string, mixed> $value
-     * @param array<string, mixed> $inbound
+     * @param  array<string, mixed>  $value
+     * @param  array<string, mixed>  $inbound
      */
     protected function handleInboundMessage(array $value, array $inbound): void
     {
         $phoneNumber = $this->phoneNumber($value);
 
-        if (!$phoneNumber) {
+        if (! $phoneNumber) {
             return;
         }
 
         $waId = $value['contacts'][0]['wa_id'] ?? $inbound['from'] ?? null;
 
-        if (!$waId) {
+        if (! $waId) {
             return;
         }
 
@@ -179,7 +180,7 @@ class ProcessWebhookEventJob implements ShouldQueue
             ]
         );
 
-        if (!$message->wasRecentlyCreated) {
+        if (! $message->wasRecentlyCreated) {
             return;
         }
 
@@ -231,7 +232,7 @@ class ProcessWebhookEventJob implements ShouldQueue
     }
 
     /**
-     * @param array<string, mixed> $inbound
+     * @param  array<string, mixed>  $inbound
      */
     protected function inboundType(array $inbound): string
     {
@@ -246,7 +247,7 @@ class ProcessWebhookEventJob implements ShouldQueue
     }
 
     /**
-     * @param array<string, mixed> $inbound
+     * @param  array<string, mixed>  $inbound
      */
     protected function inboundBody(array $inbound): ?string
     {
@@ -267,7 +268,7 @@ class ProcessWebhookEventJob implements ShouldQueue
     {
         $campaign = $message->campaigns()->first();
 
-        if (!$campaign) {
+        if (! $campaign) {
             return;
         }
 

@@ -2,7 +2,6 @@
 
 namespace App\Services\WhatsApp\Templates;
 
-use App\Models\MessageTemplate;
 use App\Models\WhatsAppAccount;
 use App\Services\WhatsApp\Concerns\InteractsWithWhatsAppApi;
 use RuntimeException;
@@ -17,8 +16,7 @@ class CreateTemplateService
     /**
      * Create a template under the account's WhatsApp Business Account.
      *
-     * @param array<int, array<string, mixed>> $components
-     *
+     * @param  array<int, array<string, mixed>>  $components
      * @return array<string, mixed> Meta response
      */
     public function handle(
@@ -42,13 +40,13 @@ class CreateTemplateService
 
         $response = $this->authenticatedHttp($account->access_token)
             ->post(
-                $this->apiBaseUrl() . '/' . $account->business_account_id . '/message_templates',
+                $this->apiBaseUrl().'/'.$account->business_account_id.'/message_templates',
                 $payload
             );
 
-        if (!$response->successful()) {
+        if (! $response->successful()) {
             throw new RuntimeException(
-                'Failed to create WhatsApp template: ' . $response->body()
+                'Failed to create WhatsApp template: '.$response->body()
             );
         }
 

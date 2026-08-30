@@ -37,7 +37,7 @@ class RecordUsageJob implements ShouldQueue
     {
         $company = Company::query()->find($this->companyId);
 
-        if (!$company) {
+        if (! $company) {
             $this->delete();
 
             return;

@@ -24,7 +24,7 @@ class MarkMessageAsReadService
             ->acceptJson()
             ->timeout(15)
             ->post(
-                $this->apiBaseUrl() . '/' . $phoneNumber->phone_number_id . '/messages',
+                $this->apiBaseUrl().'/'.$phoneNumber->phone_number_id.'/messages',
                 [
                     'messaging_product' => 'whatsapp',
                     'status' => 'read',

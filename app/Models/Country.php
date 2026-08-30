@@ -12,15 +12,15 @@ class Country extends Model
     use HasFactory;
 
     protected $fillable = [
-        'name', 'iso3', 'iso2', 'phonecode', 'capital', 'currency', 
-        'currency_symbol', 'tld', 'native', 'region', 'subregion', 
-        'timezones', 'translations', 'latitude', 'longitude', 
-        'emoji', 'emojiU', 'flag', 'wikiDataId'
+        'name', 'iso3', 'iso2', 'phonecode', 'capital', 'currency',
+        'currency_symbol', 'tld', 'native', 'region', 'subregion',
+        'timezones', 'translations', 'latitude', 'longitude',
+        'emoji', 'emojiU', 'flag', 'wikiDataId',
     ];
 
     protected $casts = [
-        'timezones' => 'array', 
-        'translations' => 'array', 
+        'timezones' => 'array',
+        'translations' => 'array',
         'flag' => 'boolean',
     ];
 
@@ -74,5 +74,4 @@ class Country extends Model
     {
         return $this->hasMany(CurrencyExchangeRate::class, 'from_currency_id');
     }
-
 }
