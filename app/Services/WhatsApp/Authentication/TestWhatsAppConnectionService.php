@@ -17,7 +17,7 @@ class TestWhatsAppConnectionService
      */
     public function handle(WhatsAppAccount $account): bool
     {
-        if (! $account->business_account_id) {
+        if (! $account->business_account_id || ! $account->access_token) {
             return false;
         }
 
