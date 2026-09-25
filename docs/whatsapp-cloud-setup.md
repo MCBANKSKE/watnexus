@@ -19,10 +19,21 @@ WHATSAPP_API_URL=https://graph.facebook.com
 WHATSAPP_GRAPH_VERSION=v23.0
 WHATSAPP_APP_ID=your_meta_app_id
 WHATSAPP_APP_SECRET=your_meta_app_secret
+WHATSAPP_OAUTH_CONFIG_ID=your_embedded_signup_configuration_id
 WHATSAPP_WEBHOOK_VERIFY_TOKEN=a-long-random-secret
 ```
 
 `WHATSAPP_APP_SECRET` is used only to validate Meta's webhook signature; never send it to a browser. `WHATSAPP_WEBHOOK_VERIFY_TOKEN` is an application-chosen shared value used once during the webhook verification handshake.
+
+## Company connection options
+
+Company administrators can open **Admin → WhatsApp Accounts → Connect WhatsApp** and choose the connection method that best suits them:
+
+- **Continue with Meta** is the recommended option. It sends the administrator through Meta sign-in, where they select the business account to connect; they do not need to find a WABA ID or create a token.
+- **Scan a QR code** creates a short-lived embedded-signup QR code. Set `WHATSAPP_OAUTH_CONFIG_ID` to the embedded signup configuration ID from Meta before enabling this option.
+- **Manual setup** remains available for technical teams with an existing WABA ID and system-user token.
+
+After Meta completes either guided connection, WatNexus stores the credential encrypted and syncs the associated phone numbers.
 
 ## 3. Connect a company
 
