@@ -16,19 +16,26 @@ class WhatsAppAccount extends Model
         'business_account_id',
         'name',
         'status',
+        'connection_method',
         'access_token',
         'token_expires_at',
+        'oauth_user_id',
+        'oauth_token',
+        'qr_code_data',
         'metadata',
     ];
 
     protected $hidden = [
         'access_token',
+        'oauth_token',
     ];
 
     protected $casts = [
         'token_expires_at' => 'datetime',
         'metadata' => 'array',
+        'qr_code_data' => 'array',
         'access_token' => 'encrypted',
+        'oauth_token' => 'encrypted',
     ];
 
     /**

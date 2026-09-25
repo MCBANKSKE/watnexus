@@ -112,29 +112,28 @@ Route::get('/super-admin/login', fn () => redirect('/login'))->name('filament.su
 */
 
 Route::prefix('whatsapp')->group(function () {
-    Route::get('/auth/redirect', [WhatsAppAuthController::class, 'redirect'])
-        ->name('whatsapp.auth.redirect');
+    Route::middleware('auth')->group(function () {
+        Route::get('/auth/redirect', [WhatsAppAuthController::class, 'redirect'])
+            ->name('whatsapp.auth.redirect');
 
+        // QR Code Connection Routes
+        Route::get('/qr/generate', [WhatsAppQrCodeController::class, 'generate'])
+            ->name('whatsapp.qr.generate');
+        Route::get('/qr/status', [WhatsAppQrCodeController::class, 'checkStatus'])
+            ->name('whatsapp.qr.status');
+
+        // OAuth Connection Routes
+        Route::get('/oauth/authorize', [WhatsAppOAuthController::class, 'authorize'])
+            ->name('whatsapp.oauth.authorize');
+        Route::post('/oauth/refresh', [WhatsAppOAuthController::class, 'refresh'])
+            ->name('whatsapp.oauth.refresh');
+    });
+
+    // Meta redirects to these callbacks without the user's application session.
     Route::get('/auth/callback', [WhatsAppAuthController::class, 'callback'])
         ->name('whatsapp.auth.callback');
-
-    // QR Code Connection Routes
-    Route::get('/qr/generate', [WhatsAppQrCodeController::class, 'generate'])
-        ->name('whatsapp.qr.generate');
-    
-    Route::get('/qr/status', [WhatsAppQrCodeController::class, 'checkStatus'])
-        ->name('whatsapp.qr.status');
-    
     Route::post('/qr/callback', [WhatsAppQrCodeController::class, 'callback'])
         ->name('whatsapp.qr.callback');
-
-    // OAuth Connection Routes
-    Route::get('/oauth/authorize', [WhatsAppOAuthController::class, 'authorize'])
-        ->name('whatsapp.oauth.authorize');
-    
     Route::get('/oauth/callback', [WhatsAppOAuthController::class, 'callback'])
         ->name('whatsapp.oauth.callback');
-    
-    Route::post('/oauth/refresh', [WhatsAppOAuthController::class, 'refresh'])
-        ->name('whatsapp.oauth.refresh');
 });

@@ -312,12 +312,9 @@ echo "Your API Key: {$result['plain_text_key']}\n";
 
 #### **3. Connect WhatsApp Business Account**
 
-**Option A: Use Web UI**
-1. Visit: `http://localhost:8000/whatsapp/auth/redirect`
-2. Complete Meta's Embedded Signup flow
-3. Callback will connect your WhatsApp Business Account
+Use **Admin → WhatsApp Accounts → Create** and enter the company's WABA ID and a Meta **system-user access token**. Saving verifies the token against Meta and automatically syncs the phone numbers when the connection succeeds. The full production setup, Meta webhook configuration, and end-to-end verification checklist are in [WhatsApp Cloud API setup](docs/whatsapp-cloud-setup.md).
 
-**Option B: Manual Connection**
+For a scripted/manual connection:
 ```php
 $company = \App\Models\Company::first();
 $user = \App\Models\User::first();
