@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\WhatsApp;
 
+use App\Filament\Resources\WhatsAppAccounts\WhatsAppAccountResource;
 use App\Http\Controllers\Controller;
 use App\Services\WhatsApp\Authentication\ConnectWhatsAppService;
 use Illuminate\Http\Request;
@@ -12,12 +13,20 @@ class WhatsAppAuthController extends Controller
         protected ConnectWhatsAppService $connectWhatsApp
     ) {}
 
-    /**
-     * Start WhatsApp onboarding.
-     */
+    /** Display the self-service WhatsApp connection options. */
+    public function show()
+    {
+        return view('whatsapp.connect', [
+            'manualUrl' => WhatsAppAccountResource::getUrl('create'),
+            'metaConfigured' => filled(config('services.whatsapp.app_id')),
+            'qrConfigured' => filled(config('services.whatsapp.oauth_config_id')),
+        ]);
+    }
+
+    /** Start WhatsApp onboarding. */
     public function redirect(Request $request)
     {
-        // We will implement Meta Embedded Signup here.
+        return redirect()->route('whatsapp.connect');
     }
 
     /**

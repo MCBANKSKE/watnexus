@@ -113,6 +113,9 @@ Route::get('/super-admin/login', fn () => redirect('/login'))->name('filament.su
 
 Route::prefix('whatsapp')->group(function () {
     Route::middleware('auth')->group(function () {
+        Route::get('/connect', [WhatsAppAuthController::class, 'show'])
+            ->name('whatsapp.connect');
+
         Route::get('/auth/redirect', [WhatsAppAuthController::class, 'redirect'])
             ->name('whatsapp.auth.redirect');
 

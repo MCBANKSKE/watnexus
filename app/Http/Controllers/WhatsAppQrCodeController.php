@@ -23,9 +23,20 @@ class WhatsAppQrCodeController extends Controller
         try {
             $data = $this->generateQrCodeService->handle();
             
-            // Store session data in cache for verification
+            $company = $request->user()?->companies()->wherePivot('is_active', true)->first();
+
+            if (! $company) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No active company found for user.',
+                ], 400);
+            }
+
+            // Meta callbacks do not include the application's session. Keep the
+            // company context server-side, keyed by the one-time QR session.
             Cache::put('qr_session_' . $data['session_id'], [
                 'code' => $data['code'],
+                'company_id' => $company->id,
                 'expires_at' => $data['expires_at'],
             ], now()->addMinutes(15));
 
@@ -80,7 +91,10 @@ class WhatsAppQrCodeController extends Controller
         ]);
 
         try {
-            $company = auth()->user()->companies()->wherePivot('is_active', true)->first();
+            $session = Cache::get('qr_session_' . $request->session_id);
+            $company = isset($session['company_id'])
+                ? \App\Models\Company::find($session['company_id'])
+                : null;
             
             if (!$company) {
                 return response()->json([

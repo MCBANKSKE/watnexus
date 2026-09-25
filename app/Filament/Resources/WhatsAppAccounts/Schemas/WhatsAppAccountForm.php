@@ -14,7 +14,7 @@ class WhatsAppAccountForm
         return $schema
             ->components([
                 Section::make('WhatsApp Business Account')
-                    ->description('Connect with a Meta system-user access token. The connection is verified and phone numbers are synced after saving.')
+                    ->description('Advanced setup for teams that already have a Meta system-user token. Prefer “Connect WhatsApp” to use Meta sign-in or a QR code.')
                     ->columns(2)
                     ->schema([
                         TextInput::make('name')

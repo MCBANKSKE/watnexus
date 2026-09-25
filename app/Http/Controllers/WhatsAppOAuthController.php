@@ -18,16 +18,18 @@ class WhatsAppOAuthController extends Controller
     /**
      * Redirect to Meta OAuth authorization page.
      */
-    public function authorize(): JsonResponse
+    public function authorize(Request $request): JsonResponse|RedirectResponse
     {
         try {
             $company = auth()->user()?->companies()->wherePivot('is_active', true)->first();
 
             if (!$company) {
-                return response()->json([
+                $response = response()->json([
                     'success' => false,
                     'message' => 'No active company found for user.',
                 ], 400);
+
+                return $request->wantsJson() ? $response : redirect()->route('whatsapp.connect')->with('oauth_error', 'No active company found for user.');
             }
 
             // Company context is sealed inside the encrypted state so the
@@ -36,16 +38,26 @@ class WhatsAppOAuthController extends Controller
 
             $authorizationUrl = $this->oauthConnectService->getAuthorizationUrl($state);
 
+            if (! config('services.whatsapp.app_id')) {
+                throw new \RuntimeException('Meta connection is not configured yet. Ask your administrator to add the Meta App ID.');
+            }
+
+            if (! $request->wantsJson()) {
+                return redirect()->away($authorizationUrl);
+            }
+
             return response()->json([
                 'success' => true,
                 'authorization_url' => $authorizationUrl,
                 'state' => $state,
             ]);
         } catch (\Exception $e) {
-            return response()->json([
+            $response = response()->json([
                 'success' => false,
                 'message' => $e->getMessage(),
             ], 500);
+
+            return $request->wantsJson() ? $response : redirect()->route('whatsapp.connect')->with('oauth_error', $e->getMessage());
         }
     }
 
